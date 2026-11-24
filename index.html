@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    try {
+      var s = localStorage.getItem("color-scheme");
+      document.querySelector('meta[name="color-scheme"]').content = (s === "light" || s === "dark") ? s : "light dark";
+    } catch (e) {}
+  </script>
+  <title>《埃隆·马斯克传》深度书籍导读</title>
+  <meta name="description" content="沃尔特·艾萨克森著《埃隆·马斯克传》完整深度书籍导读：从南非童年、Zip2、PayPal 到 SpaceX、特斯拉、OpenAI 与推特收购全景解析。">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳至正文阅读</a>
+  <div class="scroll-sentinel" aria-hidden="true"></div>
+  <div id="reading-progress" aria-hidden="true"></div>
+
+  <!-- Compact Editorial Top Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <a class="brand-link" href="#top" id="top">
+        <span class="brand-mark" aria-hidden="true">读</span>
+        <span>《埃隆·马斯克传》导读</span>
+      </a>
+      <span class="header-divider" aria-hidden="true">/</span>
+      <p id="current-section-label" class="current-section-label">导读概览</p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="icon-btn mobile-toc-btn" commandfor="toc-dialog" command="show-modal" aria-label="打开全书目录">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="6" x2="20" y2="6"></line>
+          <line x1="4" y1="12" x2="15" y2="12"></line>
+          <line x1="4" y1="18" x2="20" y2="18"></line>
+        </svg>
+        <span>目录</span>
+      </button>
+
+      <button type="button" class="icon-btn" commandfor="search-dialog" command="show-modal" aria-label="全文检索">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="btn-label-desktop">检索</span>
+        <span class="kbd-hint" aria-hidden="true">/</span>
+      </button>
+
+      <button id="settings-trigger" type="button" class="icon-btn" commandfor="reading-settings" command="toggle-popover" aria-expanded="false" aria-controls="reading-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7V4h16v3"></path>
+          <path d="M9 20h6"></path>
+          <path d="M12 4v16"></path>
+        </svg>
+        <span>阅读设置</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Declarative Reading Settings Popover (Theme 3-state + Typography) -->
+  <div id="reading-settings" class="settings-popover" popover aria-label="阅读显示设置">
+    <div class="popover-head">
+      <h2 class="popover-title">阅读显示设置</h2>
+      <button id="settings-close" type="button" class="close-icon-btn" commandfor="reading-settings" command="hide-popover" aria-label="关闭阅读设置">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="popover-body">
+      <fieldset class="setting-group">
+        <legend class="setting-label">外观主题</legend>
+        <div class="segmented stack" role="group" aria-label="外观主题选择">
+          <button type="button" class="seg-btn theme-option-btn" data-theme-choice="system" aria-pressed="true">
+            <span>跟随系统</span>
+            <span id="system-theme-status" class="theme-subtext">当前：日间</span>
+          </button>
+          <button type="button" class="seg-btn theme-option-btn" data-theme-choice="light" aria-pressed="false">
+            <span>日间纸感</span>
+            <span class="theme-subtext">暖白护眼</span>
+          </button>
+          <button type="button" class="seg-btn theme-option-btn" data-theme-choice="dark" aria-pressed="false">
+            <span>夜间深墨</span>
+            <span class="theme-subtext">低眩光暗色</span>
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset class="setting-group">
+        <legend class="setting-label">正文字体</legend>
+        <div class="segmented cols-2" role="group" aria-label="正文字体选择">
+          <button type="button" class="seg-btn" data-font-choice="sans" aria-pressed="true">现代无衬线</button>
+          <button type="button" class="seg-btn" data-font-choice="serif" aria-pressed="false">典雅宋体</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="setting-group">
+        <legend class="setting-label">字号大小</legend>
+        <div class="segmented cols-4" role="group" aria-label="字号选择">
+          <button type="button" class="seg-btn" data-size-choice="sm" aria-pressed="false">小</button>
+          <button type="button" class="seg-btn" data-size-choice="md" aria-pressed="true">标准</button>
+          <button type="button" class="seg-btn" data-size-choice="lg" aria-pressed="false">大</button>
+          <button type="button" class="seg-btn" data-size-choice="xl" aria-pressed="false">特大</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="setting-group">
+        <legend class="setting-label">行距与版心</legend>
+        <div class="segmented cols-2" role="group" aria-label="行距选择">
+          <button type="button" class="seg-btn" data-leading-choice="normal" aria-pressed="true">标准紧凑</button>
+          <button type="button" class="seg-btn" data-leading-choice="relaxed" aria-pressed="false">宽松舒朗</button>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <!-- Mobile Modal TOC Dialog (Light-Dismiss) -->
+  <dialog id="toc-dialog" class="editorial-dialog" closedby="any" aria-labelledby="toc-dialog-title">
+    <div class="dialog-header">
+      <h2 id="toc-dialog-title" class="dialog-title">全书导读目录</h2>
+      <button type="button" class="close-icon-btn" commandfor="toc-dialog" command="close" aria-label="关闭目录">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <nav class="dialog-content" aria-label="移动端章节目录">
+      <ul class="toc-list"><li><a class="toc-link is-chapter" href="#prologue" data-target="prologue">导读引言</a></li><li><a class="toc-link is-chapter" href="#overview" data-target="overview">人生脉络与阅读视角</a></li><li><a class="toc-link is-chapter" href="#ch-1" data-target="ch-1">一、南非童年、父母离异与硅谷起步</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-1-1" data-target="sec-1-1">1. 不合群的偏执天才与校园暴力</a></li><li><a class="toc-link is-sub" href="#sec-1-2" data-target="sec-1-2">2. 暴躁的父亲、离婚与逃离南非</a></li><li><a class="toc-link is-sub" href="#sec-1-3" data-target="sec-1-3">3. 大学求学、斯坦福退学与 Zip2 起家</a></li><li><a class="toc-link is-sub" href="#sec-1-4" data-target="sec-1-4">4. X.com、PayPal 政变出局与握手言和</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-2" data-target="ch-2">二、SpaceX 诞生与特斯拉的“夺权”之战</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-2-1" data-target="sec-2-1">1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立</a></li><li><a class="toc-link is-sub" href="#sec-2-2" data-target="sec-2-2">2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同</a></li><li><a class="toc-link is-sub" href="#sec-2-3" data-target="sec-2-3">3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO</a></li><li><a class="toc-link is-sub" href="#sec-2-4" data-target="sec-2-4">4. 第一段婚姻破裂与猎鹰一号首射失利</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-3" data-target="ch-3">三、2008 绝境翻盘与“太空首富”争霸战</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-3-1" data-target="sec-3-1">1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转</a></li><li><a class="toc-link is-sub" href="#sec-3-2" data-target="sec-3-2">2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市</a></li><li><a class="toc-link is-sub" href="#sec-3-3" data-target="sec-3-3">3. 39A 发射台、太空回收口水战与星链计划</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-4" data-target="ch-4">四、AI 暗战、自动驾驶执念与政治转向</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-4-1" data-target="sec-4-1">1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI</a></li><li><a class="toc-link is-sub" href="#sec-4-2" data-target="sec-4-2">2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底</a></li><li><a class="toc-link is-sub" href="#sec-4-3" data-target="sec-4-3">3. 站队川普、与女儿断绝关系及星链的俄乌风波</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-5" data-target="ch-5">五、440 亿收购推特、婚恋家族纠葛与结语</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-5-1" data-target="sec-5-1">1. 从 14.9% 股份到 440 亿全资收购推特</a></li><li><a class="toc-link is-sub" href="#sec-5-2" data-target="sec-5-2">2. 铁血裁员、“推特文件”反噬与董事会警告</a></li><li><a class="toc-link is-sub" href="#sec-5-3" data-target="sec-5-3">3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-6" data-target="ch-6">六、结语</a></li></ul>
+    </nav>
+  </dialog>
+
+  <!-- Full-Text Search Dialog (Light-Dismiss) -->
+  <dialog id="search-dialog" class="editorial-dialog" closedby="any" aria-labelledby="search-dialog-title">
+    <div class="dialog-header">
+      <h2 id="search-dialog-title" class="dialog-title">全文关键词检索</h2>
+      <button type="button" class="close-icon-btn" commandfor="search-dialog" command="close" aria-label="关闭检索">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="dialog-content">
+      <div class="search-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search-input" type="search" placeholder="搜索人物、公司、事件或观点（如：猎鹰、特斯拉、OpenAI）…" autocomplete="off" aria-label="输入搜索关键词">
+      </div>
+      <div class="search-meta">
+        <span id="search-count" role="status" aria-live="polite">输入关键词检索全书导读</span>
+        <span>按 Esc 清空或关闭</span>
+      </div>
+      <ul id="search-results" class="search-results"></ul>
+    </div>
+  </dialog>
+
+  <!-- Main Two-Column Reading Shell -->
+  <div class="layout-shell">
+    <aside class="toc-sidebar" aria-label="全书章节目录">
+      <div class="toc-heading">
+        <span>目录导航</span>
+        <span id="toc-percent" class="toc-percent">0%</span>
+      </div>
+      <nav class="toc-rail">
+        <ul class="toc-list"><li><a class="toc-link is-chapter" href="#prologue" data-target="prologue">导读引言</a></li><li><a class="toc-link is-chapter" href="#overview" data-target="overview">人生脉络与阅读视角</a></li><li><a class="toc-link is-chapter" href="#ch-1" data-target="ch-1">一、南非童年、父母离异与硅谷起步</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-1-1" data-target="sec-1-1">1. 不合群的偏执天才与校园暴力</a></li><li><a class="toc-link is-sub" href="#sec-1-2" data-target="sec-1-2">2. 暴躁的父亲、离婚与逃离南非</a></li><li><a class="toc-link is-sub" href="#sec-1-3" data-target="sec-1-3">3. 大学求学、斯坦福退学与 Zip2 起家</a></li><li><a class="toc-link is-sub" href="#sec-1-4" data-target="sec-1-4">4. X.com、PayPal 政变出局与握手言和</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-2" data-target="ch-2">二、SpaceX 诞生与特斯拉的“夺权”之战</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-2-1" data-target="sec-2-1">1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立</a></li><li><a class="toc-link is-sub" href="#sec-2-2" data-target="sec-2-2">2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同</a></li><li><a class="toc-link is-sub" href="#sec-2-3" data-target="sec-2-3">3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO</a></li><li><a class="toc-link is-sub" href="#sec-2-4" data-target="sec-2-4">4. 第一段婚姻破裂与猎鹰一号首射失利</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-3" data-target="ch-3">三、2008 绝境翻盘与“太空首富”争霸战</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-3-1" data-target="sec-3-1">1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转</a></li><li><a class="toc-link is-sub" href="#sec-3-2" data-target="sec-3-2">2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市</a></li><li><a class="toc-link is-sub" href="#sec-3-3" data-target="sec-3-3">3. 39A 发射台、太空回收口水战与星链计划</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-4" data-target="ch-4">四、AI 暗战、自动驾驶执念与政治转向</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-4-1" data-target="sec-4-1">1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI</a></li><li><a class="toc-link is-sub" href="#sec-4-2" data-target="sec-4-2">2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底</a></li><li><a class="toc-link is-sub" href="#sec-4-3" data-target="sec-4-3">3. 站队川普、与女儿断绝关系及星链的俄乌风波</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-5" data-target="ch-5">五、440 亿收购推特、婚恋家族纠葛与结语</a><ul class="toc-sublist"><li><a class="toc-link is-sub" href="#sec-5-1" data-target="sec-5-1">1. 从 14.9% 股份到 440 亿全资收购推特</a></li><li><a class="toc-link is-sub" href="#sec-5-2" data-target="sec-5-2">2. 铁血裁员、“推特文件”反噬与董事会警告</a></li><li><a class="toc-link is-sub" href="#sec-5-3" data-target="sec-5-3">3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”</a></li></ul></li><li><a class="toc-link is-chapter" href="#ch-6" data-target="ch-6">六、结语</a></li></ul>
+      </nav>
+    </aside>
+
+    <main id="main-content" class="reading-main" tabindex="-1">
+      <!-- Resume Reading Banner (only shown when local bookmark exists) -->
+      <div id="resume-banner" class="resume-banner" hidden>
+        <span class="resume-banner-text">上次阅读至：<strong id="resume-title"></strong></span>
+        <div class="resume-actions">
+          <a id="resume-go" class="btn-link-accent" href="#prologue">继续阅读</a>
+          <button id="resume-dismiss" type="button" class="btn-ghost">清除</button>
+        </div>
+      </div>
+
+      <!-- Book Guide Hero Masthead (Above the fold) -->
+      <section class="book-hero" aria-label="书籍导读简介">
+        <div class="book-cover-card" aria-hidden="true">
+          <svg class="cover-orbit-svg" viewBox="0 0 200 200" fill="none">
+            <circle cx="110" cy="110" r="78" stroke="#E69A7C" stroke-width="1" stroke-dasharray="4 4"/>
+            <ellipse cx="105" cy="105" rx="92" ry="38" transform="rotate(-28 105 105)" stroke="#F5EFE6" stroke-width="1.2"/>
+            <circle cx="156" cy="54" r="6" fill="#E69A7C"/>
+            <circle cx="110" cy="110" r="26" fill="#E69A7C" fill-opacity="0.16" stroke="#E69A7C" stroke-width="1"/>
+          </svg>
+          <span class="cover-kicker">BOOK READING GUIDE</span>
+          <div class="cover-title-block">
+            <p class="cover-title-zh">埃隆·马斯克传</p>
+            <p class="cover-title-en">ELON MUSK</p>
+          </div>
+          <div class="cover-author">沃尔特·艾萨克森 著</div>
+        </div>
+
+        <div class="hero-copy">
+          <p class="hero-eyebrow">深度书籍导读 · 全本精讲</p>
+          <h1 class="hero-title">万字解读《埃隆·马斯克传》：世界首富的成功秘籍，为什么他每次都能赌赢？</h1>
+          <p class="hero-subtitle">历时两年贴身跟访、未经当事人审稿的官方授权传记全景解读。沿着从南非童年到 SpaceX、特斯拉、OpenAI 与推特的时间轴，完整拆解这位充满争议的时代奇才。</p>
+          <ul class="hero-meta-grid">
+            <li>原著作者：<strong>沃尔特·艾萨克森</strong></li>
+            <li>全文字数：<strong>53,387 字</strong></li>
+            <li>结构篇幅：<strong>6 章 · 17 节</strong></li>
+            <li>预计阅读：<strong>约 97 分钟</strong></li>
+          </ul>
+          <div class="hero-cta-row">
+            <a class="btn-primary" href="#prologue">开始阅读正文</a>
+            <a class="btn-secondary" href="#overview">先看人生脉络</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Book Companion Overview: Interactive Timeline & Reading Lenses -->
+      <section id="overview" data-toc-id="overview" data-toc-title="人生脉络与阅读视角" aria-label="全书脉络与阅读视角">
+        <div class="timeline-box">
+          <div class="guide-section-header">
+            <h2 class="guide-section-title">全书关键人生节点</h2>
+            <span class="guide-section-note">点击任意年份直达对应章节</span>
+          </div>
+          <div class="timeline-grid">
+            <a class="timeline-item" href="#sec-1-1">
+              <span class="timeline-year">1971</span>
+              <span class="timeline-label">南非出生</span>
+              <span class="timeline-desc">偏执专注与校园暴力</span>
+            </a>
+            <a class="timeline-item" href="#sec-1-2">
+              <span class="timeline-year">1989</span>
+              <span class="timeline-label">孤身赴北美</span>
+              <span class="timeline-desc">逃离父亲与大学求学</span>
+            </a>
+            <a class="timeline-item" href="#sec-1-3">
+              <span class="timeline-year">1995</span>
+              <span class="timeline-label">创办 Zip2</span>
+              <span class="timeline-desc">斯坦福退学睡在办公室</span>
+            </a>
+            <a class="timeline-item" href="#sec-1-4">
+              <span class="timeline-year">1999</span>
+              <span class="timeline-label">X.com &amp; PayPal</span>
+              <span class="timeline-desc">颠覆金融与政变出局</span>
+            </a>
+            <a class="timeline-item" href="#sec-2-1">
+              <span class="timeline-year">2002</span>
+              <span class="timeline-label">创立 SpaceX</span>
+              <span class="timeline-desc">赴俄买弹碰壁后自造火箭</span>
+            </a>
+            <a class="timeline-item" href="#sec-2-3">
+              <span class="timeline-year">2004</span>
+              <span class="timeline-label">入局特斯拉</span>
+              <span class="timeline-desc">决裂接任 CEO 押注电车</span>
+            </a>
+            <a class="timeline-item" href="#sec-3-1">
+              <span class="timeline-year">2008</span>
+              <span class="timeline-label">绝境大翻盘</span>
+              <span class="timeline-desc">猎鹰第四发逆转与奔驰救命钱</span>
+            </a>
+            <a class="timeline-item" href="#sec-5-1">
+              <span class="timeline-year">2022</span>
+              <span class="timeline-label">440 亿买推特</span>
+              <span class="timeline-desc">铁血裁员与舆论风暴眼</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="guide-section-header">
+          <h2 class="guide-section-title">四个核心阅读视角</h2>
+          <span class="guide-section-note">带着问题读透这部传记</span>
+        </div>
+        <div class="lenses-grid">
+          <a class="lens-card" href="#ch-1">
+            <span class="lens-tag">视角 01 · 性格底色</span>
+            <h3 class="lens-title">童年创伤与“恶魔模式”</h3>
+            <p class="lens-desc">理解马斯克为何既渴望融入人群又缺乏共情，以及暴躁父亲如何深刻塑造了他的行事逻辑。</p>
+          </a>
+          <a class="lens-card" href="#ch-2">
+            <span class="lens-tag">视角 02 · 造物哲学</span>
+            <h3 class="lens-title">第一性原理与极速迭代</h3>
+            <p class="lens-desc">看他如何在火箭与电动车两大重工业里砸碎传统成本结构，把“不可能”压缩成工程问题。</p>
+          </a>
+          <a class="lens-card" href="#ch-3">
+            <span class="lens-tag">视角 03 · 冒险赌性</span>
+            <h3 class="lens-title">2008 破产边缘的豪赌</h3>
+            <p class="lens-desc">SpaceX 三连败、特斯拉现金耗尽，回看他在悬崖边把全部身家推上牌桌的关键决策。</p>
+          </a>
+          <a class="lens-card" href="#ch-4">
+            <span class="lens-tag">视角 04 · 争议与两面性</span>
+            <h3 class="lens-title">AI 暗战、推特与政治转向</h3>
+            <p class="lens-desc">从与佩奇决裂、创办 OpenAI，到 440 亿收购推特，审视天才光环下的情绪化与执念。</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Full Article Content -->
+      <article class="article-body">
+        <section id="prologue" class="prologue-block" data-toc-id="prologue" data-toc-title="导读引言" aria-label="导读引言">
+          <span class="prologue-label">导读引言 · 为什么读这本传记</span>
+          <p id="p-1" data-section-title="导读引言">为什么很多成功人士都有一个不幸的童年？那些不合群的孩子究竟是性格缺陷还是潜在的天才？今天我们要讲一本很有意思的书——《埃隆·马斯克传》，一起来看看这位帮川普成功夺位的世界首富是怎样练成的。</p>
+          <p id="p-2" data-section-title="导读引言">市面上关于马斯克的书多如牛毛，为什么我们要聊这一本呢？因为这是老马唯一授权的传记，算是官方版本。三年前，刚过 50 岁的他成了世界首富，春风得意，于是就找到了著名的传记作家沃尔特·艾萨克森，请他来为自己写这本传记。</p>
+          <p id="p-3" data-section-title="导读引言">可能你会觉得这故事有点俗套：一个写手为了挣钱，写了本书吹捧一位富豪，这种桥段见多了。但其实艾萨克森一开始根本不愿意接这个活。毕竟他是谁？他被认为是美国当代最好的传记作家，前些年大火的《史蒂夫·乔布斯传》就是他写的，一些常年霸榜的传记，像什么《富兰克林传》《爱因斯坦传》《达·芬奇传》等等，也都是他的作品。</p>
+          <p id="p-4" data-section-title="导读引言">那他为什么不愿意接马斯克的活呢？主要是因为老马还活着。给人物立传，最好就是在主人公离世之后：一来他完整的一生已经盖棺定论了；二来他本人也不可能再干涉作者的创作，可以写得更客观公正一点。所以艾萨克森大部分作品都写的是已故名人，他可以随心所欲、直言不讳，这也是他作品最大的卖点。这也是为什么当年乔布斯找他写传记的时候他立马回绝了，直到得知乔帮主已患癌症、时日无多，才勉强答应了下来；即便如此，艾萨克森还是坚持把《乔布斯传》的主体部分放在他离世之后创作。</p>
+          <p id="p-5" data-section-title="导读引言">可是为什么他为马斯克破了一次例呢？这是因为老马发誓，他提的任何要求都可以答应。艾萨克森说：“你不能干涉我的创作，甚至书出版前你都不可以看书稿。”马斯克说：“好。”艾萨克森说：“我要天天跟着你上班、开会，观察你的一言一行，最起码两年。”马斯克说：“好。”艾萨克森说：“你要允许我采访任何人，包括引用你敌人的说法。”马斯克说：“好。”后来，马斯克果然信守承诺，没有提前审阅书稿；而艾萨克森在书里也是没有任何避讳，写作尺度特别大，甚至还批评了被马斯克视为奇耻大辱的家庭丑闻——那就是他的父亲跟自己养了 20 多年的继女在一起了，并且生了两个孩子。所以，如果你想要了解一个真实的马斯克，而又不满足于粗浅的新闻报道，艾萨克森的这本书就是最佳选择。</p>
+        </section>
+
+      <section class="chapter-section" aria-labelledby="ch-1">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 01</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">童年创伤、原生家庭与早期互联网创业 · 约 13,098 字（24 分钟）</span>
+          </div>
+          <h2 id="ch-1" class="chapter-title" data-toc-id="ch-1" data-toc-title="一、南非童年、父母离异与硅谷起步">一、南非童年、父母离异与硅谷起步</h2>
+        </header>
+                <h3 id="sec-1-1" class="subsection-title" data-toc-id="sec-1-1" data-toc-title="1. 不合群的偏执天才与校园暴力">1. 不合群的偏执天才与校园暴力</h3>
+        <p id="p-6" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">和大多数人物传记一样，这本书也是从大人物的童年说起。我们都知道，马斯克 1971 年出生在南非，很多天才从小就异于常人，他也不例外。小马斯克一出生就精力旺盛，睡觉特别少，每天不停地大声哭泣，甚至把邻居吵到了要报警的地步。作者和马斯克接触的两年里，最大的感受就是马老板是一个极其情绪化的人，这种说变就变的情绪原来是从娘胎里就带出来的。</p>
+        <p id="p-7" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">在他 3 岁的时候，妈妈梅耶·马斯克决定送他去幼儿园。但到了学校，小马开始变得不太正常：大部分时间都是精神恍惚的状态，听不进去别人说的话；老师让他认真听讲，他就像没听到一样；同学们在他面前手舞足蹈，他也没有反应，每天就只会盯着窗外发呆，有时候还会突然自言自语，同学们都觉得他有点神经。</p>
+        <p id="p-8" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">学校先是怀疑马斯克智力发育迟缓，接着怀疑他的听力有问题，最后又感觉这应该是注意力缺陷、专注度不够。对此，马斯克自己的解释是：他从小就有一种能力，当他的大脑在进行计算思考的时候，感官系统可以关闭，接收不到任何外界的信息。也就是说，他没有听到别人说话表面看起来好像是注意力有缺陷，但实际上恰恰相反，他是在用他异于常人的专注度在思考。这就是为什么他在几岁的时候就能连续八九个小时专注地看书，绝大部分成年人都可能做不到。妈妈梅耶说，后来她看到儿子眼神放空的时候就不会去打扰他了。</p>
+        <p id="p-9" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">但听不到人说话还不是马斯克在学校最让人担心的问题，更严重的是他不合群。弟弟金伯尔和妹妹托斯卡上学第一天就能带朋友回家玩，而哥哥马斯克却完全没有社交能力，他孤独、阴郁，没有人愿意和他做朋友。而且他还经常说别人蠢——倒不是他没有礼貌，他真的是这么觉得的。可能你会说，这不奇怪，天才不都很孤独吗，他们是主动选择的孤独，不想跟普通人为伍。但是马斯克似乎又不是这样的，2017 年他在接受《滚石》杂志采访的时候说：“我从来没有主动寻求孤独，我不想做一个孤独的人。”</p>
+        <p id="p-10" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">马斯克自我诊断过，他说自己是阿斯伯格综合征——这种精神障碍会影响人的社交能力、人际关系、情感连结和自我调控，但实际上他从未被正式确诊过，只是表现得很像。比如马斯克不懂人情世故，别人说什么他都是按字面意思去理解；后来通过读书他才明白，原来人很多时候可以想象、可以心口不一，需要去猜测话里的弦外之音。毫无疑问，他很不喜欢这种模糊的感觉，他更喜欢那些精确的东西，比如工程学、物理学和密码学。同时，他又非常情绪化，经常会在独处的时候陷入焦虑。马斯克体会不到生活中的善良温暖，也没有取悦别人的情感需求，简单来说，就是缺乏同理心和共情能力。</p>
+        <p id="p-11" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">另外，在小马斯克身上时常还会表现出可怕的偏执，考虑到他惊人的专注水平这也很好理解——专注和偏执本身就是一体两面的事情。5 岁的时候，他的一个表弟举办生日派对，全家人都去了，唯独马斯克因为打架被罚留在家里。然后他就展示了一个 5 岁小孩不该有的果决：他一个人走出门，走了两个小时的路，穿越了半个城市，硬生生走到了表弟家。马斯克推开门的时候参加派对的所有人都吓傻了：一个 5 岁孩子看不懂路标，他是怎么找过来的？马斯克说，是他以前坐车去过一次，所以就记住了路线。当然，记性好只是个辅助条件，更重要的是他那种心气和狠劲。弟弟金伯尔曾评价，说哥哥一旦下决心要干什么就必须干成，那种刚毅甚至经常让人感到害怕——就像这次，他不顾后果地 all in 川普，大家应该就能感受得到。不过我们也必须承认，偏执很多时候就是成事的动力。</p>
+        <p id="p-12" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">8 岁的时候，马斯克突然想要一辆摩托车。父亲在旁边看报纸，他走过去说：“我需要一辆摩托车，理由 A 是什么，理由 B 是什么，C 是什么。”父亲当然不理他，太荒谬了，一个 8 岁的小孩要什么摩托车？但父亲不答应，他就一遍一遍地重复。接下来的几个星期，这个场景每天都会重复无数遍。最后，被念得心灵都快受创的老爹只好屈服，真的给这位 8 岁的小学生买了辆摩托车。当然，后面我们还会讲，在创业过程中这种偏执几乎到了极端的地步。</p>
+        <p id="p-13" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">他后来的一个朋友认为，马斯克情绪越来越失控、偏执越来越严重，很可能是童年创伤的应激反应。当时的南非充满了种族歧视和暴力冲突，在大街上遇到机枪扫射和持刀行凶都是家常便饭，暴力的氛围甚至蔓延到了学校。马斯克上学比较早、发育又比较晚，是班里最瘦小的孩子，加上他又不合群，经常会被班上的坏孩子霸凌。有一次，一个男生与马斯克发生了口角，课间的时候这个男生找了几个人疯狂地殴打他，甚至把马斯克从楼梯上踢了下去，撞得头破血流，整个头肿成了一个肉球，眼睛都看不见了，在医院治了一个多星期。因为这些旧伤，直到现在马斯克还要定期接受鼻腔矫正手术。</p>
+        <p id="p-14" data-section-title="一、南非童年、父母离异与硅谷起步 · 1. 不合群的偏执天才与校园暴力">12 岁的时候，他和弟弟去参加一个野外生存主题的夏令营，每个孩子只能分到一点食物和水，老师们鼓励孩子互相抢夺资源。马斯克被更大的孩子揍了两次，吃的全被抢走了，训练结束后瘦了十斤。甚至在这个夏令营上，隔三差五就会有孩子意外身亡，老师也不管。每天生活在这样的环境，我们大部分人别说体验了，想想都害怕。这种充斥在马斯克童年记忆里的恐惧和创伤，加重了他的敏感、偏执和情绪化。等他大一点了，才终于找到了生存之道：那就是你不想被打倒，就必须强硬地回击对方，你不能表现出丝毫的恐惧和软弱，否则对方就会往死里欺负你。这在一定程度上塑造了后来马斯克非常强势的沟通风格。</p>
+        <h3 id="sec-1-2" class="subsection-title" data-toc-id="sec-1-2" data-toc-title="2. 暴躁的父亲、离婚与逃离南非">2. 暴躁的父亲、离婚与逃离南非</h3>
+        <p id="p-15" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">当然了，任何性格的形成不仅仅是个人经历的结果，还跟原生家庭脱不开关系。你们知道小马在学校受到霸凌后，他的父亲埃罗尔·马斯克是什么反应吗？令人心寒的是，父亲不仅没有给儿子任何的支持和安慰，反而站在肇事者一边责骂埃隆说：“谁让你没事去招惹人家的，活该挨打！”这是典型的受害者有罪论调，也是老马斯克和孩子关系的一个缩影。</p>
+        <p id="p-16" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">埃隆的弟弟金伯尔告诉作者，从小到大父亲一直都是这样的，感觉他好像有妄想症，根本不知道发生了什么却能说得头头是道，谎话更是张口就来。在他看来，父亲可能只是想找个借口打骂自己的孩子而已。埃隆也回忆说，父亲的情绪阴晴不定，经常是上一秒还和颜悦色，下一秒就因为一点小事暴跳如雷；不仅对孩子如此，他对妻子也是这样。</p>
+        <p id="p-17" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">所以在埃隆 8 岁那年，父母就离婚了，原因是母亲梅耶再也无法忍受埃罗尔的暴力和情绪失控。他们十几岁就相识恋爱，埃罗尔做点小生意，梅耶是位模特，曾进入了南非小姐比赛的决赛。在结婚前梅耶就抓到过埃罗尔出轨，所以一直没有答应他的求婚，直到后来发现自己意外怀孕了，没有办法才和他结婚。然而这样的婚姻注定就是个错误：婚后埃罗尔经常辱骂殴打梅耶，婚姻破裂在所难免。离婚后，三个孩子跟着母亲生活，为了养活他们，梅耶同时要打好几份工作，经常忙得不着家。埃罗尔还扬言说：“梅耶养不活三个孩子的，早晚还得滚回到我身边。”但这事情并没有发生。</p>
+        <p id="p-18" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">这样的原生家庭对埃隆的性格影响深远。慢慢地，他找到了一种应对父亲打骂的方式，就是不表露任何感情、变得冷酷无情——因为他明白，只要表露出恐惧、委屈或者难过，在外就会被欺负，在家里也会被无视。既然打开心扉没有任何正面收益，那不如干脆关上，不再轻易吐露心迹。这种个性几乎伴随了他的一生。</p>
+        <p id="p-19" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">不过在埃隆 10 岁的时候，他突然做出了一个令人费解的决定：要搬去跟父亲住。别说外人不理解了，连母亲梅耶至今都没有搞懂是为什么。埃隆对作者解释说，自己当年是被父亲精神操控了——爸爸和奶奶经常跟他说：“你们三个孩子都跟着妈妈，爸爸一个人多孤独啊，这不公平。”但作者认为，埃隆选择与父亲同住也有迹可循，因为对于 10 岁的他来说，父亲身上有着致命的吸引力。尽管埃罗尔情绪不稳定、经常打骂家人、听起来像是个社会底层的混子，但实际上他上过正经大学、学过工程，家里还有着全套的百科全书和各种工具；他平常喜欢鼓捣机械、发动机、航天模型，甚至还会开飞机。而且在生意场上埃罗尔也颇有头脑，一度赚了不少钱，曾经拥有一辆劳斯莱斯（虽然后来生意失败车子没了）。但对于热爱数学、物理、喜欢看书的埃隆来说，这些都太酷了，父亲的聪明才智对他有着强大的吸引力，所以他才愿意去主动靠近，这也再正常不过了。而且 4 年后，弟弟金伯尔也被父亲用同样的方式忽悠了过来。</p>
+        <p id="p-20" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">在跟随父亲生活的几年里，埃隆虽然继续遭受贬低和否定，但也在父亲那里学到了不少新东西。比如这段时间，他迷恋上了科幻小说和电子游戏，尤其是科幻小说，让他对人类征服宇宙产生了最初的憧憬，他在那会儿就开始研究火箭发动机的原理了。11 岁的时候，他第一次在购物中心见到了计算机，然后就缠着老爹让他也给自己买一台，但埃罗尔没有松口，认为计算机只是用来打游戏的，好好学工程才是正道，不能玩物丧志。那父亲不给买，埃隆就跑去打零工挣钱，自己买了一台性能比较低的个人计算机。买电脑时还赠送了一个 Basic 语言编程课，一共有 60 个小时，结果他竟然连续三天没有睡觉，一口气就全部学完了。</p>
+        <p id="p-21" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">几个月之后，约翰内斯堡的一所大学举办了个人计算机研讨会，参会费是 400 美元，马斯克就请求父亲给他报名。父亲再次拒绝，觉得太贵了，而且这东西不适合儿童。那你说埃隆这死脑筋哪肯善罢甘休？他再次使用了“磨人心法”，把埃罗尔烦到崩溃，只好去跟大学协商：“我儿子还是个小朋友，能不能给个儿童价？”学校居然答应了，给他打了个五折。研讨会结束后，埃罗尔去接埃隆回家，发现有三位教授正在围着他热烈讨论。见到埃罗尔后，一位教授激动地说：“先生，您的儿子是个天才，您必须给他买一台新电脑！”于是埃隆就终于拥有了一台好电脑。他自学了好几种编程语言，13 岁的时候编写了一款名叫《导火线》的游戏，发布在一个电脑技术学术期刊上，杂志社还给了他 500 美元的稿费。后来他又开发了两款游戏，从此打开了新世界的大门。</p>
+        <p id="p-22" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">然而，随着年龄增长，埃隆的自我意识越来越强烈，也越来越想摆脱父亲的控制。1989 年，17 岁的埃隆在与老爸共同生活了 7 年后，终于无法忍受父亲的阴暗、暴躁和神经质，下定决心要离开。他试图说服母亲带着兄妹三人一起去美国，但是弟弟妹妹没有兴趣，于是埃隆就决定自己去美国闯荡。但对于一个未成年的孩子，怎么才能从南非到美国呢？他想到外公就出生在美国，所以试图通过这层关系申请美国公民的身份，但被拒绝了；他又想到母亲是加拿大人，可以先申请加拿大国籍，“曲线救国”，再寻找机会申请美国籍。那这次申请就成功了，1989 年埃隆决定前往加拿大展开新的生活。</p>
+        <p id="p-23" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">他回忆到，当时父亲埃罗尔·马斯克对他的决定冷嘲热讽，甚至说：“你去了加拿大也混不下去，几个月后就得灰溜溜地滚回来。”当作者向埃罗尔求证此事时，老马斯克却矢口否认，他声称：“我可没嘲笑过我们埃隆。恰恰相反，他是在我的建议和鼓励下才去的美国，我当时还给他找了一个美国的朋友帮他办手续。”那对于父亲这种说法，埃隆是一点也不意外，他无奈地说：“他就是这样的，一天到晚编故事，活在自己的幻想里，觉得自己是个英雄。”在书里，作者艾萨克森也判断，毫无疑问是老马斯克在说谎，因为他提供的时间和细节都完全对不上。</p>
+        <p id="p-24" data-section-title="一、南非童年、父母离异与硅谷起步 · 2. 暴躁的父亲、离婚与逃离南非">尽管没有得到父亲的祝福，埃隆还是只身一人踏上了加拿大的土地，他的北美之旅充满了波折。一开始他来到蒙特利尔想要投奔母亲的亲戚，但到了才发现亲戚早就搬走了，他只好又去了温哥华，寻找母亲同父异母的哥哥，也就是他的舅舅，于是就带他搬到了多伦多。不久后，妈妈和妹妹也从南非搬了过来，仨人租了个一居室的房子，妈妈和妹妹睡一张床，埃隆睡沙发，生活非常拮据。为了生存，他们三个人都出去找工作：妹妹去汉堡店打工，埃隆到微软的多伦多办事处当实习生，母亲则继续当模特和营养顾问。经过了几个月的努力，他们才终于攒了一些钱，换了个条件稍微好点的住处。而这段经历也粉碎了一个流传已久的谣言：很多人都说马斯克去北美的时候是个富二代，家里有矿，随手就能从兜里掏出颗祖母绿；实际上，他父亲的宝石生意那会儿早就破产了，家里根本没什么钱。</p>
+        <h3 id="sec-1-3" class="subsection-title" data-toc-id="sec-1-3" data-toc-title="3. 大学求学、斯坦福退学与 Zip2 起家">3. 大学求学、斯坦福退学与 Zip2 起家</h3>
+        <p id="p-25" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">在生活稳定下来后，埃隆继续在加拿大求学。他参加了美国高中生的 SAT 考试，考入了离多伦多很近的女王大学。不久后弟弟金伯尔也搬到了多伦多，兄弟俩在同一所大学就读。至此，一家人终于在北美团聚了，只留下老父亲独自在南非成了孤家寡人。</p>
+        <p id="p-26" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">在大学期间，埃隆和弟弟经常玩一个有趣的游戏：从报纸上找一个他们觉得最有意思的人，想办法联系到对方，然后邀请他共进午餐。他们成功过很多次，没想到那些有头有脸的人物真的会跟两个毛头小子吃饭（当然打电话的肯定是擅长社交的弟弟金伯尔，那时候埃隆的社交能力可没那么强）。有一次，他们选中了一个叫做彼得·尼克尔森的银行高管，这个人是个物理学硕士和数学博士。埃隆和他一起吃饭的时候，交流了很多哲学、物理学和宇宙本质的话题，两人相谈甚欢，还成了忘年交。尼克尔森后来邀请马斯克兄弟到他的银行做暑期实习。在实习期间，埃隆发现很多拉美国家的债券价格极低，他认为这些债券有美国政府的担保，价值不应该那么低，如果买进的话应该能稳赚不赔。于是他就向银行申请资金运作债券，但被拒绝了。银行的理由是：“我们已经持有太多拉美债券了，不想再买。”这让埃隆大为震惊：“你们银行都是这么思考问题的吗？买不买不应该看能不能赚到钱吗？”作者后来采访尼克尔森，他表示自己不太同意埃隆的观点，毕竟银行有自己的规则和风险考量；不过他也认为，这件事说明埃隆不喜欢遵循传统和规则，这为他后来颠覆银行业埋下了伏笔。</p>
+        <p id="p-27" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">在女王大学读了两年书后，埃隆觉得很无聊，于是在大三的时候转到了美国费城的宾夕法尼亚大学主修物理。在宾大期间，埃隆结识了他最亲密的几个朋友。一个是<strong>任宇翔</strong>，他在去宾大之前就代表中国队拿下了国际奥林匹克物理竞赛金奖。埃隆说，任宇翔是在他当时认识的人里唯一物理方面比他强的。他们一起做了很多物理实验，经常探讨如何用火箭把人送到火星。任宇翔回忆道，当时觉得只是在聊一个幻想，也没太当回事，怎么都想不到埃隆居然会来真的。那个时候，埃隆已经开始阅读电池技术的论文了，对电动车也非常感兴趣，特别是他看到加州出台的一项政策，计划在 2003 年要让 10% 的车辆是电动车——虽然今天回头看加州并没有完成这个目标，但这对埃隆研究电动车起到了实实在在的鼓舞作用。</p>
+        <p id="p-28" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">那他在宾大的另一个好友就是他的室友<strong>阿德奥·雷西</strong>，一个真正的社交达人，每天都带着埃隆出入各种派对和夜店。不过雷西说，埃隆在派对上的表现就像一个刚到地球的外星人在观察人类的社交行为：他很喜欢派对的氛围，自己心里也不想做一个孤独的书呆子、渴望融入人群，但是他又很难完全投入进去，总觉得像个局外人。他曾经请求妹妹带自己参加派对，可到了那里他却躲在角落里看书，妹妹都觉得很丢人。渴望融入又害怕融入，这成为了埃隆一生社交风格的写照。</p>
+        <p id="p-29" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">在宾大的暑假期间，埃隆前往硅谷实习，而他的同学们大都选择去了华尔街。但埃隆认为银行家和律师对社会的贡献不够大，科技才是推动社会发展的。埃隆跟一家游戏公司说自己是个大学生，想要一份暑期实习工作。这家公司本来没有打算要他，就直接抛给了他一个全公司都解决不了的技术难题，想让他知难而退；结果没想到，埃隆只用了两周时间就把问题解决了。这让游戏公司全员震惊，立马抓住他给了个 offer，邀请埃隆全职加入公司。但是由于当时他还没有毕业，无法获得工作签证，只能在公司实习一个暑假。然而这段经历让埃隆意识到，他完全可以靠开发游戏赚钱，但他认为把人生投入到电子游戏上格局太小、太容易达成了，于是实习结束后他就回费城了。不过这次是开车回去的：埃隆用实习工资买了一辆 20 年车龄的老宝马车，他甚至去垃圾场找了一些汽车零件，然后去一个修理厂借人家的升降机自己把零件换上去，开着这辆自己 DIY 的改装车，一路抛锚回到了学校。</p>
+        <p id="p-30" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">第二年，埃隆本科毕业，他成功申请到了斯坦福大学的材料学研究生，本来计划一路读到博士，希望研究明白电池是如何驱动电动车的，然后就去搞电动车。但是临近开学，埃隆突然就犹豫了，因为他判断能够影响人类未来的有三个东西：第一是互联网，第二是可再生能源，第三就是太空旅行。而这三样东西他都想参与，可他意识到互联网的热潮已经开始了，等自己读完博士黄花菜都凉了。而且大四的时候，埃隆和弟弟已经商量出了一个大致的互联网创业方向，连产品都想好了，埃隆甚至已经开始写代码。所以到底是去读博，还是现在就开始互联网创业呢？埃隆拿不定主意，他想起了自己的忘年交彼得·尼克尔森，就是那个银行高管。尼克尔森说：“互联网革命，你这辈子大概就只能遇到这一回；而读研究生，你以后有的是机会。”于是埃隆立刻收拾行李，到硅谷创业去了。</p>
+        <p id="p-31" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">当然，他也没有完全孤注一掷。在开学的时候，他还是去斯坦福大学注册了个学籍，然后办了延期入学申请——所以说，再疯狂的人都会给自己留条后路。埃隆对他的导师、也就是斯坦福大学材料学教授比尔·尼克斯说：“如果我创业失败了，我希望还能回来读书。”尼克斯跟作者回忆道：“我当时说没有问题，但我心里有预感，这孩子可能永远都不会回来了。”</p>
+        <p id="p-32" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">1995 年，马斯克兄弟开始了他们的第一次创业。哥哥埃隆负责技术，弟弟金伯尔负责找客户。他们在硅谷的帕洛阿尔托（Palo Alto）租了个小办公室，里面只有两张桌子和两个床垫。兄弟俩决定不租房子、直接睡在办公室，而这一住就是 6 个月。这期间，他们洗澡就到隔壁的基督教青年会蹭水，一日三餐都在门口的 24 小时快餐店解决。6 个月后，他们才租了一套很小很简陋的公寓。但是埃隆是个夜猫子，每天写代码写到半夜，累了就蜷缩在桌子底下眯一觉，还是很少回家睡；只有第二天需要见客户的时候，弟弟金伯尔才会提醒他赶紧回家洗个澡。</p>
+        <p id="p-33" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">他们的创业项目叫做“城市虚拟导航”。简单来说，就是把当时流行的黄页和电子地图结合起来：黄页上汇集了企业的地址、电话等信息，把这些信息放到电子地图上，用户就可以在查完信息后直接导航到这家企业。以今天的技术来看这好像也没啥稀奇的，但要知道这是在 30 年前，马斯克兄弟可能是世界上第一个想到把二者结合的人。他们给这个项目起了个名，叫做 <strong>Zip2</strong>，听起来像个压缩文件的名字。</p>
+        <p id="p-34" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">兄弟俩的创业生活非常艰苦，家人也给了他们不少支持。父亲埃罗尔·马斯克从南非过来，给他俩留下了 2.8 万美元，以及一辆 500 美元淘来的破车，那会儿兄弟俩和父亲的关系还算过得去。不过母亲梅耶跟孩子们的感情更好，而且从多伦多来美国也更近，所以她隔三差五就跑过来帮兄弟俩洗洗衣服做做饭，还给了他们 1 万美元和一张信用卡——在很长一段时间，他们连工作签证都没有、办不了信用卡，就只能刷妈妈的卡。</p>
+        <p id="p-35" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">在互联网革命的浪潮下，这种苦日子并没有持续太久，很快 Zip2 项目就引起了风险投资人的关注。当时他们的服务器只是一台很小的电脑，但为了给投资人留下好印象，哥俩就买了一个很大的柜子把小电脑放进去，让人误以为他们有一台很大的服务器，显得很有实力。最终，有一家风投公司给马斯克兄弟投资了 300 万美元，这个数字把他们所有人都吓了一跳：原来踩在风口上，拿钱竟然这么容易！而且风投公司还找了移民律师，帮马斯克兄弟搞定了美国签证，另外还给了他们每人 3 万美元让他们去买辆车——估计风投也是觉得这俩人太寒酸了，出去谈个业务别人都不容易信任他们。之后，埃隆就拿着这笔钱去买了一辆 1967 年的捷豹 E-Type 车，这车比他年纪都大，因为他小时候在汽车杂志上见到过，上面说这是有史以来最好的跑车，埃隆当时就下定决心以后有钱了必须要搞一辆，现在终于算是儿时梦圆了——不过唯一的问题就是，每个星期它至少都会坏一次。</p>
+        <p id="p-36" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">拿到投资后，Zip2 项目开始大规模推广，很多大企业购买了他们的服务，尤其是各大报社。一切似乎都挺顺利，可唯一的问题是团队规模扩大了很多倍，埃隆需要展示一些管理才能，而他的表现却让人大跌眼镜。埃隆是公司的首席技术官，管理着整个工程师团队。我们之前就说过，埃隆没有共情能力，无法体会别人的喜怒哀乐，但对事情的要求却非常高，这就让他看起来特别苛刻，对别人的批评从来都是不分场合、不留情面地劈头盖脸，甚至埃隆还经常会用带着人身攻击的措辞，比如他会说“你写的代码太白痴了”，他还会在工程师下班后把人家写的代码全部推倒重写。埃隆不在乎人家的感受和观点，也不在乎大家喜不喜欢自己，更不想成为员工心目中有亲和力的好领导；他只关心心中那个目标，为了实现它，挖苦、讽刺、打压什么手段都可以用，他根本不管你的感受。</p>
+        <p id="p-37" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">如果你看过《乔布斯传》，就会发现埃隆和乔布斯太像了：一样的刻薄、一样的缺乏共情能力、一样的专注于自己的目标。为什么低情商的天才都能把事情做得如此成功呢？我想可能是因为他们不被世俗所困，所有的精力都用在了实现目标上。埃隆在女王大学时期的一个好朋友曾试图加入他们的团队，但干了 6 个星期就跑掉了，这位朋友的评价是：“相比做他的同事，我觉得还是做他的朋友更愉快点。”而且埃隆对待他人的态度是一视同仁的，不仅对同事苛刻，对亲人也是如此。他的母亲、弟弟甚至妻子都提到过一件事：虽然埃隆和父亲的关系不好，但他确实是最像父亲的一个孩子——他们的思考方式相似，说的很多话也一样，都对别人漠不关心，都喜欢打压控制别人。在兄弟俩一起创业后，因为埃隆的苛刻，弟弟经常和他吵架，吵到激烈的时候哥俩还会直接动手干架，有时候在办公室里就扭打在一起了，甚至会打到去医院缝针，这可把同事们给吓坏了。金伯尔说，跟他一起工作真的很难。</p>
+        <p id="p-38" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">埃隆强势的风格也注定了他第一次创业的结局不会太美好。风投公司投资后，找了一个有管理经验的人来做公司的 CEO，职位在埃隆之上。这其实是一种很常见的操作，当年苹果、谷歌拿到投资时投资人也是这么做的，而且效果还不错，因为这些公司得到规范的管理后成长得都很快。可是埃隆却非常不满意，因为他觉得空降一个 CEO 会阻碍他很多想法的实现。埃隆·马斯克在之后整个职业生涯里用行动证明了，他是一个拒绝分享权力的人：你想跟他合作，权力就只能掌握在他一个人手里。后来埃隆不同意投资人制定的战略方向，要求董事会赶走现任 CEO、让自己来出任 CEO 以实施他的战略，董事会当然不同意了。到后来董事会推动 Zip2 和另一家公司合并，埃隆就带着员工搞内讧把合并给搅黄了，结果他就被逐出了董事会。风投公司也被他搞得筋疲力尽，决定把项目卖掉。1999 年，康柏公司以 3.07 亿美元的价格收购了 Zip2，按照马斯克兄弟的股份，埃隆分到了 2200 万美元，金伯尔分到了 1500 万美元。卖掉公司后，马斯克兄弟给了父亲 30 万美元，给了妈妈 100 万美元，亲疏远近一目了然了。</p>
+        <p id="p-39" data-section-title="一、南非童年、父母离异与硅谷起步 · 3. 大学求学、斯坦福退学与 Zip2 起家">然后埃隆自己买了一套豪宅，花 100 万美元买了一辆迈凯伦 F1 跑车，这是当时世界上最快的量产车。另外，埃隆还跟女王大学的学妹 Justine 结婚了——这是他的第一任妻子，他们生了 5 个孩子。在某种程度上来说，Justine 和埃隆是同类人，她也喜欢待在家里看书，不太喜欢社交，性格也是两极化，一会儿热情一会儿暴躁。可想而知，他俩的婚姻里充满了疯狂的吵架、不留情面的指责和直接了当的攻击。当时埃隆身边的人，从母亲到弟弟再到朋友，都不赞成他娶这个女生，但他就是那种别人不让我干我偏要干的性格，埃隆很享受与全世界为敌的感觉。所以这对相爱相杀的情侣最终还是走进了婚姻的殿堂，当然是一路吵着架走进去的：婚礼前一天，俩人还激烈地吵了一个通宵，埃隆甚至通知家人们婚礼取消了，但很快他又改变主意了；婚礼当天，埃隆和 Justine 抱在一起跳舞，他凑到妻子耳边说：“这个家，我说了算。”</p>
+        <h3 id="sec-1-4" class="subsection-title" data-toc-id="sec-1-4" data-toc-title="4. X.com、PayPal 政变出局与握手言和">4. X.com、PayPal 政变出局与握手言和</h3>
+        <p id="p-40" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">享受了几个月的有钱人生活后，埃隆又开始觉得无聊了，他说“还是创业好玩点”，所以他又去了。他想起了以前在加拿大银行实习的经历，觉得“嗯，这真是个愚蠢的行业”，于是干脆决定搞一家金融公司，要颠覆整个传统银行业。</p>
+        <p id="p-41" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">1999 年 3 月，他和一位银行界的朋友合伙创立了一个网站——<strong>X.com</strong>。埃隆投资了 1200 万美元，希望未来这个网站能满足所有的金融需求，就比如银行、线上支付、支票、信用卡、投资、贷款等等。因为在传统金融业这些业务是分属于不同机构的，埃隆想打破这种业态，做一个一站式服务的金融平台。不过朋友们都在劝他说 X 这个名字不太好，听起来特别不正规；埃隆却喜欢得不得了，认为它又好记又好输入，甚至沿用到了今天。</p>
+        <p id="p-42" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">但还没开心多久，在他第二次创业开始后很快就重演了上一次的经历：埃隆极其低情商的管理风格很快就逼走了合伙人，团队早期的大部分成员也纷纷辞职走人，远离这个讨厌鬼。但毕竟是踩在互联网创业的风口上，X.com 还是拿到了红杉资本等顶级风投的投资，而且人家还帮忙拉来两家银行合作，从此埃隆自己就可以发行信用卡了，离他的金融帝国梦又近了一步。然而没过多久，之前在投资人身上发生的故事再次上演了：红杉资本认为埃隆完全不擅长管理，需要引入一个更成熟的管理者，他们找来了财捷集团的前负责人比尔·哈里斯担任 CEO，埃隆则担任首席产品官和董事会主席。但这种安排用在他身上注定会埋下隐患。</p>
+        <p id="p-43" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">到了 2000 年初，X.com 拥有了 20 万注册用户。当时市面上还有一个竞争对手，叫做 <strong>PayPal</strong>，也就是我们熟悉的美国版支付宝，创始人是硅谷创投教父彼得·蒂尔和马克斯·列夫琴。当时这两家公司的用户体量是差不多的，背后也都有资本支持，于是不可避免地开始了烧钱大战，就很像我们当年的滴滴快的、美团饿了么的补贴大战，而且结局也差不太多。资本方觉得这样烧下去也不是个办法，不如干脆把两家公司合并了，大家都有钱赚，于是他们就安排两边的创始人见面谈判。</p>
+        <p id="p-44" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">可想而知，低情商马在谈判的时候把自家公司的用户数夸大了好几倍，还说合并后的新公司 X.com 要占到 90% 的股份。这让列夫琴非常生气，感觉被侮辱了智商，而且认为埃隆毫无诚意，所以谈判不欢而散。不过马斯克当时确实是想诈对方一把，同时他也确实不太想合并，因为在他眼里自己的公司要比对面有价值得多。看到埃隆破坏谈判后，哈里斯威胁说：“你要是再破坏谈判，我就辞职。”这句话也是真的捏到了埃隆的软肋，因为哈里斯是个融资高手，2000 年互联网泡沫已经开始破裂、融资环境急转直下，要是没有哈里斯，当时的埃隆自己去融怕是一分钱都拿不到，公司直接可以宣告解散。所以他罕见地低头了，同意好好重新去谈。</p>
+        <p id="p-45" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">于是就有了第二次谈判，双方商定好合并后 X.com 占股 55%、PayPal 占 45%。按理说这还是个不错的结果，但是埃隆刻薄的本性又忍不住爆发了，他跟列夫琴炫耀：“哼，我占了大便宜，你个大 loser！”这下可彻底把人家给激怒了，列夫琴说什么也不同意合并了。无奈之下，哈里斯只好亲自出面擦屁股，他去到列夫琴家赔礼道歉，甚至还帮忙叠衣服、打扫卫生以表诚意。不得不说哈里斯真是个谈判高手，手段之柔软。经过一番劝说后，列夫琴同意了继续合并，但这回他提出了条件：双方必须各占 50% 股份。也就是说，埃隆同学因为一时嘴快，让公司白白丢了 5% 的股份。</p>
+        <p id="p-46" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">不过合并之后，埃隆依然是最大的个人股东，顺理成章地出任了董事长。但几周后，列夫琴和哈里斯也产生了矛盾，埃隆就趁机联合列夫琴，一起逼走了对他有恩的哈里斯——因为这样他才能亲自担任 CEO，从此独揽大权。</p>
+        <p id="p-47" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">但是我们都知道新官上任三把火。掌权后，埃隆在公司进行了一项重大改革：取消了技术部门的独立性，把写代码的工程师们和产品经理整合在一个部门。他说，这么干是为了“把巴掌打在工程师脸上”，让他们可以直接面对用户反馈，防止闭门造车。虽然这么做是有道理的，管理学上称为“让听得见炮火的人指挥战斗”，埃隆后来在 SpaceX、特斯拉还有 X 等公司里都贯彻了这个理念。</p>
+        <p id="p-48" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">然而那时候还没那么多人服他，埃隆和新团队很快又产生了巨大分歧，主要体现在三个方面：</p>
+        <p id="p-49" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">1. <strong>发展方向的分歧</strong>：原 PayPal 团队认为应该专注于在线支付业务，先深耕这个领域再横向扩张，这也是互联网行业的常见逻辑；但埃隆认为专注做支付太小了，他要颠覆整个银行业，打造一个具有金融功能的社交网络。</p>
+        <p id="p-50" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">2. <strong>品牌名称</strong>：埃隆坚持要把合并后的新品牌继续沿用 X.com 这个名字，但 PayPal 团队认为自己已经有了庞大的用户基础不能改名。双方争执不下就去做了调研，结果发现新用户第一次听 X.com 这个名字，竟然联想到的是成人网站。但小马哪里肯服输？他依然坚持己见疯狂耍横，不过最后还是没耍横成功。</p>
+        <p id="p-51" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">3. <strong>技术选择问题</strong>：新产品该用什么操作系统？埃隆当时还是比较钦佩比尔·盖茨的，他支持用 Windows 系统；但列夫琴认为 Windows 系统不安全、有漏洞，也不够酷，应该使用开源的 Unix 系统。俩人又在那里争执不下，最后埃隆霸王硬上弓，强行让技术团队花了一年时间把原先的 Unix 系统代码在 Windows 系统下重写。这让列夫琴非常不满，质问埃隆说：“你浪费了一年时间就为了重复做无用功？”更糟糕的是，后来重写的代码出现了很多 bug，导致支付系统遭到攻击，给公司带来了巨大损失。</p>
+        <p id="p-52" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">好了，列夫琴终于忍无可忍了，决定推翻埃隆的暴力统治。他找到 PayPal 另一位创始人彼得·蒂尔——因为在两家公司合并后蒂尔其实已经淡出管理层了，列夫琴劝他重新出山挽救公司、出任 CEO，这次蒂尔答应了。之后他们就偷偷写了封请愿书，控诉埃隆的各种乱来，很多员工也在上面签了字，毕竟真的没有几个人喜欢他。他们将请愿书交给了红杉资本的负责人，希望金主爸爸来出面收拾埃隆。最后，红杉资本方做了一个折中的决定：解除了埃隆在公司的职务，但是蒂尔也不能担任 CEO，而是从外部引入一位管理高手。</p>
+        <p id="p-53" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">重点在刚才这场政变发生时，埃隆是完全不知情的，因为他正在澳洲和妻子度蜜月——他们已经结婚好久了，一直因为工作忙没有时间度假。而且他是在蜜月中间打电话指挥工作时，发现员工们突然变得硬气了，甚至还敢顶撞他，才觉得好像不对劲、发生了什么。好在公司里还有一位支持埃隆的员工偷偷给他发了封邮件，告诉他正在发生的一切。埃隆暴跳如雷，立马飞回了公司，他试图说服红杉资本收回决定但被无情拒绝，公司的高管们也没有一个人接埃隆的电话。最后是首席运营官里德·霍夫曼觉得他实在有点可怜，就主动约他吃了个饭（其实这时候霍夫曼也不是向着埃隆，只是觉得他是比较善良的，冷处理不太好，总得给人一个解释）。</p>
+        <p id="p-54" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">虽然埃隆被踢出了公司，但所有人都屏住了呼吸——因为以他有仇必报的性格肯定不会善罢甘休的，大家都在坐等他猛烈的报复。但出乎意料的是，埃隆这次非常平静、很优雅，他给全体员工写了一封邮件，说是时候找一位更有经验的管理者代替我带领公司走得更远了。有位支持埃隆的员工问他：“你为什么不反击，至少可以把支持你的人组织起来集体辞职抗议一下吧？”埃隆说：“算了，公司是我的孩子，我情愿放手让孩子活下来。”这个表态还是很让人动容的。埃隆·马斯克就是这样一个两极化的人：在有些时候你会感觉他任性、自私像个小孩，可有时候他又表现得非常有气度和格局，或许这就是偏执狂的 AB 面吧。这里再八卦一句：刚才劝埃隆反击的支持者是 Jeremy Stoppelman，后来创办了 Yelp（也就是美国版的大众点评网）；约他吃饭、可怜他的那位首席运营官里德·霍夫曼后来也离开创办了领英。反正从这个团队里出去的人创办了一众知名公司，这帮人后来也被人们称作是“PayPal 黑帮”，彼此间帮助扶持。</p>
+        <p id="p-55" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">就这样，埃隆在创业的前三年里两次被赶出了自己的公司，这也确实有点惨了，但是他低情商和强势风格让这个结局似乎又在情理之中。不过失意归失意，埃隆在金钱上的收获却很大：2002 年 7 月，PayPal 被 eBay 以 15 亿美元的价格收购，埃隆获得了 2.5 亿美元的回报。卖掉公司那天，他去质问自己的死对头列夫琴：“你为什么要背叛我？”列夫琴回答说：“我觉得我做得对，这么做是为了挽救公司，不是针对你这个人。”埃隆点了点头，说了声“好”。几个月后，他约上蒂尔、列夫琴等几个参与政变的高管一起吃了个饭，大家握手言和。</p>
+        <p id="p-56" data-section-title="一、南非童年、父母离异与硅谷起步 · 4. X.com、PayPal 政变出局与握手言和">作者说，其实 2022 年埃隆谈起当年这件事的时候依然耿耿于怀，他觉得本来自己可以把 X.com 做成一家市值几万亿的公司，太可惜了。但是很有意思的是，当时他正在收购 Twitter，他说 Twitter 要完成的使命就是把社交平台和支付平台结合起来——这不正就是当年他为 X.com 规划的愿景，20 年后终于可以落地了！收购完成后，他立刻把 Twitter 改名 X。大概这就是“念念不忘，必有回响”吧。</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link next" href="#ch-2"><span class="pager-dir">下一章 →</span><span class="pager-name">二、SpaceX 诞生与特斯拉的“夺权”之战</span></a></nav>
+      </section>
+
+      <section class="chapter-section chapter-deferred" aria-labelledby="ch-2">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 02</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">从火星使命到太空火箭与电动车革命 · 约 10,752 字（20 分钟）</span>
+          </div>
+          <h2 id="ch-2" class="chapter-title" data-toc-id="ch-2" data-toc-title="二、SpaceX 诞生与特斯拉的“夺权”之战">二、SpaceX 诞生与特斯拉的“夺权”之战</h2>
+        </header>
+                <h3 id="sec-2-1" class="subsection-title" data-toc-id="sec-2-1" data-toc-title="1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立</h3>
+        <p id="p-57" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">在第二次被亲手创立的公司踢出局后，埃隆心情非常郁闷，决定出去散散心。他找到了好朋友阿德奥·雷西——就是大学时期天天带他搞派对那哥们，俩人相约一起去旅行。在旅途中，雷西问埃隆后面有什么打算，他回答道：“想干点和太空探索有关的事情，比如登陆火星，这可是我从小到大一直幻想的事。”但他其实也有些疑虑，不知道个人能在这么大的事情上参与多少，毕竟发射火箭太费钱了。雷西就很认真地跟埃隆讨论了一下火箭的成本，这一讨论才发现，火箭上的那些材料无非就是些金属和燃料，算算其实没有多少钱，他们突然意识到这事儿比想象中可行得多。</p>
+        <p id="p-58" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">当天晚上，埃隆就登录了 NASA 官网，想看看美国最近的航天计划是什么、大概预算是多少。在他的设想里，1969 年美国都登月了，那现在 NASA 肯定在研究怎么登陆火星吧？结果却让他大失所望，人家根本没有这方面的计划。但埃隆又转念一想：这不正是个机会吗？自己可以去填补这个空白，带领人类登陆火星！而且这是个让他兴奋的目标，因为太空探索可是比互联网更伟大的事业。第二天，埃隆就频繁地出现在了各大图书馆里，疯狂借阅各种跟火箭有关的书籍。</p>
+        <p id="p-59" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">过了一阵，PayPal 的前同事举办了一次聚会，埃隆受邀参与。但他全程没有怎么参加派对，而是坐在游泳池边上捧着一本俄罗斯火箭发动机手册非常认真地啃。前同事们走过去问他：“埃隆，你下一步打算干啥？”他说：“我准备带领人类殖民火星，让人类能够跨行星旅行。”这下可好，大家面面相觑，尴尬得很，心里可能觉得这人真的疯了——没想到两次被赶出公司对他打击那么大，甚至还有点内疚。</p>
+        <p id="p-60" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">里德·霍夫曼当时也在场，他自言自语地说：“这怎么会是一门生意呢？”后来他跟本书作者艾萨克森说他终于想明白了：一般创业者的逻辑是先找到一门生意，然后再去做；但埃隆不是这样的人，他是一个<strong>使命驱动型</strong>的人——他认定一件事是他的使命，就会全力以赴地去做，然后在做事的过程中再去想办法让这件事在财务上可持续，也就是<strong>先有使命，再谈生意</strong>。</p>
+        <p id="p-61" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">我觉得霍夫曼的分析特别贴切，咱们中国人常说“先行好事，后问前程”。你去看那些划破旧时代的天才，很多都是埃隆这样的做事风格，大开大合，非常冒进，可能也只有这样的人才会把不可能变成可能。一个善于控制风险和计算成本的人，可以做成一门不错的生意，甚至打造一家很大的公司，但这样的人不敢碰一个不可能的生意，他们被认为是商人，绝不会有人说他们是革命者、创新者；只有使命驱动型的人，才敢冒别人不敢冒的风险，去推动新旧时代的更迭。</p>
+        <p id="p-62" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">在埃隆眼里，去火星移民就是他的使命。当然，移民火星先得解决的问题是，火星没有空气、水等基本的生存物质。所以埃隆的计划是先发射一个小型温室上去——温室里有植物生存所必需的东西，先让植物在上面生长，最后人再上去。他说温室不难打造，只要花 3000 万美元就够了，最大的挑战其实是上哪儿找到足够廉价的火箭。</p>
+        <p id="p-63" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">为了找到解决方案，他参加了火星学会的聚会。一个火箭工程师告诉他，可以去买一枚俄罗斯退役的弹道导弹，因为弹道导弹的运载工具就是廉价的火箭。埃隆觉得有点道理，于是他真的去了俄罗斯，向军方申请购买弹道导弹，但最后没有买成，因为俄罗斯人要价太高了，要 1800 万美元一枚。埃隆本来觉得自己很会谈判，强势地跟对方砍价，结果人家战斗民族根本不吃这套，他越砍价就越涨价，这让埃隆碰了一鼻子灰。</p>
+        <p id="p-64" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">不过老马也不是个怂包，他在回美国的飞机上干脆决定自己成立一家公司造火箭！然后飞机还没落地他就开始行动了：他用电脑制作了一个清单，详细计算了生产一枚中型火箭所需的全部材料和成本。埃隆自己发明了一个概念，叫做<strong>白痴指数</strong>，这个指数专门用来表示一个产品的售价要比材料成本高出多少——如果一个产品的白痴指数越高，就代表它的售价偏离真实价格越多；而愿意为这种高溢价产品买单的人，埃隆觉得他们看起来像白痴，所以就给取了这个名字。而火箭就是一种白痴指数极高的产品：一枚火箭的售价是它材料成本的 50 倍，也就是说，火箭的材料成本就只有售价的 2%。</p>
+        <p id="p-65" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">埃隆认为，这个巨大的差距就是自己的机会：作为一家民营火箭公司，一定可以把成本大幅降下来。按照他的设想，利用微处理器的进步能把火箭小型化，小火箭发射一次的成本就很低了；另外还可以研究火箭回收技术，让小火箭可以重复使用，那成本还能进一步降低。这种思考模式就是埃隆常说的<strong>第一性原理</strong>——从事物的最底层、最本质开始思考，而不是纠结于各种表层的技术指标或者行业内人士的看法等等。</p>
+        <p id="p-66" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 1. 使命驱动的火星梦、俄罗斯购弹碰壁与 SpaceX 成立">2002 年 5 月，不顾身边人的劝阻，埃隆在洛杉矶成立了太空探索技术公司，简称 SET；但几个月后他就把公司改名了，把他心心念念的字母 X 又加到了公司名里，叫做 <strong>SpaceX</strong>。之后，他就高调地对外宣称：“我们的目标，是在 2003 年 9 月前发射第一枚火箭，2010 年前向火星发射一枚执行任务的无人火箭。”今天来看，这两个目标埃隆都没有实现，所以很多人都批评说他很爱吹牛。不过其实这是埃隆有意为之，他当然知道这两个目标是不可能完成的，但他从 PayPal 时代就学会了一个定目标的方法，就是把目标定得非常夸张，一看就绝对不可能完成，每次团队都会抱怨他不切实际。但埃隆的逻辑是“取法其上，得乎其中”：定一个 1000 分的目标，哪怕拼尽全力最后没有实现、可能也完成了 50%，那也有 500 分了，这就比定一个 100 分的目标、百分百实现要强得多——何况还有那么几次，他定得很离谱的目标还真实现了。</p>
+        <h3 id="sec-2-2" class="subsection-title" data-toc-id="sec-2-2" data-toc-title="2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同</h3>
+        <p id="p-67" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">SpaceX 公司的第一个员工叫做汤姆·穆勒，他是火箭发动机工程师。和马斯克一样，他也是从小喜欢科幻的书呆子，同样是个天才：14 岁的时候，穆勒就拿父亲的焊枪改装发动机，自制了一枚简易小火箭。马斯克第一次见到他的时候，他在一个叫做 TRW 的火箭发动机公司工作——人类第一个登月的宇航员尼尔·阿姆斯特朗登月时坐的火箭，用的就是这家公司的发动机。穆勒还租了一个仓库，平时自己就在里面鼓捣发动机。</p>
+        <p id="p-68" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">埃隆打听到汤姆·穆勒这号人物之后，就直接冲到了他的仓库堵人，一见面也不寒暄，开口就问了一堆技术问题——比如你做过最大的发动机有多大、用的什么燃料、怎么能做出更大的发动机、做一个发动机要用多少钱——像个机关枪似的一个接一个地发问。那穆勒这边一边回答一边心想：“这陌生人好奇怪，问题真多……嗯，不对，他是谁？”问了一堆之后，埃隆又丢下狠话说：“周天我再来找你。”穆勒赶紧拒绝：“周天不行，我约了一帮朋友来家里看超级碗决赛。”但他还是失算了，埃隆根本不是个在乎打扰别人的人，周天的时候他直接去到穆勒家又拉住他问了个没完，最后搞得大家都没心思看球了，索性凑过来一起讨论——反正大家都是工程师嘛，七嘴八舌地讨论到最后还一起画了个草图，这就是 SpaceX 第一枚火箭的蓝图，略显随意了一点。但在这之后，穆勒就成了 SpaceX 公司的第一名员工，担任推进部门负责人、设计火箭发动机。不过他提了一个要求，就是埃隆要把他前两年的薪水提前交给第三方托管，因为穆勒知道搞火箭风险很大，他不想公司倒了、自己的工资还被拖欠。埃隆同意了，但他也据此认定穆勒的角色只能是员工，不可能是合作伙伴——因为他认为，你不愿意承担风险，就没有资格当股东。</p>
+        <p id="p-69" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">当 SpaceX 开始陆续招人后，公司迫切需要一个工厂，于是埃隆就在洛杉矶机场附近找到了一个旧仓库直接就把它改造了。然后他把设计师和工程师也放到了工厂里，让他们跟制造团队一起办公。这在一般公司里是很罕见的，因为通常研发部门和制造部门都是分开的。但埃隆觉得他这么做的好处是：假如研发部门的设计不合理，随时就会被装配线上的一线工人逮住臭骂，设计师和工程师们就会非常重视，遇到问题修改的速度也会飞快。这样一来就可以最大化消除部门之间的脱节和扯皮，研发部门也能以最快的速度响应一线的需求。虽说这个办法是粗鲁了点，但它却非常有用，它让指挥战斗的人也能听到前线的炮火，大大提高了效率。</p>
+        <p id="p-70" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">除了这种不寻常的沟通方式外，埃隆还给团队灌输了一种“不说 No”的企业文化。他说：“如果你总是摇头，老说这个干不了、那个不可能，那你就得走人了，我们只留下能做成事的人。”这种企业文化最明显地体现在了成本控制上。埃隆会质疑所有零部件的采购价格。举个例子：比如工程师报价说一个火箭发动机需要 1000 万，埃隆就会问为什么这么贵？他们解释说因为要用到一些高规格的零件；埃隆再问为什么要用这么高规格的？他们说这是行业标准，或者这是法律要求；那埃隆就会问：“谁起草的这些要求？有名有姓吗？为什么要起草这些要求？”一般这时候工程师们就答不上来了。像这样的对话就是他们团队的日常，埃隆会质疑每一项支出的合理性，他对工程师们说：“记住，除了物理规律，没有什么是不能突破的。”也正是因为这种质疑精神，让 SpaceX 的火箭制造成本大幅降低。</p>
+        <p id="p-71" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">再举个例子：一个供应商对发动机喷管旋转驱动器报价 12 万美元，这让埃隆非常生气，他说：“这玩意儿也不比车库门开关复杂多少，咱们自己做一个吧！”于是工程师们就硬着头皮自己动手做了，结果不到 5000 美元就解决了问题。还有一家供应商交付完第一批燃料箱整流罩后，突然提高了下一批的价格，这就像是一个油漆工给你家刷了一半墙突然坐地起价、要求你付三倍价格他才给你刷完。那埃隆可不吃这一套，他最讨厌被人要挟，所以他干脆踢开供应商、自己造这个零件。就这样几年之后，他们 70% 的火箭零部件都能自己造了，让 SpaceX 的成本远远低于行业平均水平。</p>
+        <p id="p-72" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">除了在零部件生产、采购上省钱，在测试上埃隆也是想尽一切办法降低成本。众所周知火箭和军事有着千丝万缕的联系，所以在这个行业里有很多军用标准和流程——比如每个新版本的发动机都需要在一连串不同条件下进行很多个小时的试射，这个测试流程非常严谨，而且成本也非常高，所以全行业的测试成本都居高不下。但埃隆却说，不用那么繁琐的测试，只要造一个发动机在试验台上点火、只要能工作就能把它装进火箭。在他看来，小火箭成本低，失败了损失也没那么大，没必要像大火箭那样花高成本去测试。这说明了埃隆对风险的容忍度远比一般人要高得多。2003 年 3 月，他们的第一款火箭发动机成功进行了试射，这证明埃隆赌对了。</p>
+        <p id="p-73" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">当然也有坊间传言说 SpaceX 能成长起来全靠 NASA 和军方的扶持。客观来讲，有几笔关键的官方订单确实在 SpaceX 早期帮了大忙：比如 2003 年初，埃隆去华盛顿五角大楼说服美国国防部把一个发射小型战术通信卫星的订单给了 SpaceX，这是他们的第一份商业合同，金额 350 万美元。不过这些订单与其说是官方扶持，不如说是埃隆虎口夺食，有很多机会完全是靠他自己的营销天赋从竞争对手那里抢来的。</p>
+        <p id="p-74" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">比如 2003 年 12 月，他逼着团队加班加点，把他们的第一枚火箭猎鹰一号的原型赶工做了出来，然后用一辆拖车拖到了华盛顿。为什么要这么干呢？因为当时 NASA 的博物馆要举行一个公开活动，埃隆觉得这简直是在公众面前展示公司实力的绝佳机会。他催促大家：不管好坏先把火箭造出来再说，能不能飞不重要，重要的是先有个看得见摸得着的实物在媒体和 NASA 面前秀一把，让大伙知道一家民营公司竟然能造出七层楼高的大火箭！在他看来，这事绝对能上头条，说不定能带来一些机会。</p>
+        <p id="p-75" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">事实证明，埃隆的感觉是对的。NASA 的局长对他们这家公司印象深刻，还派了一位副局长去对接马斯克商谈合作。这个副局长名叫利亚姆·萨斯菲尔德，是位技术型官僚，他很钦佩埃隆的常识，两人整天在那发电子邮件探讨各种技术问题，很快就成了好朋友。埃隆说：“这下 NASA 的合作肯定稳了。”可没想到，NASA 没有走竞标程序就把一份价值 2.27 亿美元的合同给了另一家民营火箭公司。这让埃隆超级生气，发邮件质问萨斯菲尔德。对方也是个老实人，他在邮件里跟埃隆解释说：NASA 内部开会认为那家公司的财务状况非常糟糕，如果没有这个单子可能就死掉了，他们觉得这是家好公司，所以想出手救一把。但埃隆听完这个理由更为愤怒，他认为 NASA 应该鼓励创新和竞争，而不是去扶持一家快倒闭的公司，SpaceX 的实力更强，不选我们就是不公平！</p>
+        <p id="p-76" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">让人惊讶的是，埃隆交给法院的证据，就是萨斯菲尔德给他“告密”的邮件！你说这不是把人家架在火上烤吗？别人把你当朋友，掏心掏肺告诉你内幕，结果你反手就把聊天记录公开到法庭，你让萨斯菲尔德以后还怎么在 NASA 混哦？反正这种事一般人都做不出来，但如果是埃隆·马斯克一切就变得合理了——毕竟他真的没有同情心，只要他能实现目标，就不在乎伤害到了谁。所以后来这场官司 SpaceX 毫无悬念地打赢了，NASA 被要求重新把这个项目开放竞标，而 SpaceX 凭借硬核实力赢得了其中很大一部分订单，整个局面被彻底翻盘。</p>
+        <p id="p-77" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">那听到这里可能有人会问：既然都撕破脸了，NASA 为啥还要让他中标，不报复报复呢？其实我觉得在这种状况下 NASA 已经没有报复的空间了，因为事情闹得那么大、全国媒体都在关注，要在全国人民眼皮子底下耍阴招，谁敢冒这个险？再说本身 SpaceX 确实比同行更有竞争力，加上埃隆是个硬茬，NASA 也只能认栽。</p>
+        <p id="p-78" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 2. 汤姆·穆勒、车间办公与用官司掀翻 NASA 合同">不过让他们没想到的是，埃隆提出的合作方式颠覆了整个航空航天业。以往供应商和 NASA 合作，都是 NASA 先提出要求、希望设备能达到哪些参数，供应商再根据要求计算达成需要的成本，然后再加上一定的利润空间就是合同报价——像洛克希德·马丁还有波音这些企业，和军方、NASA 几十年都是这么合作过来的。结果到了埃隆这儿，变成了他先去问 NASA：“你们的目标是什么？是把卫星发射进轨道对吧？那我就对你们这个结果负责，我做到这个结果你们再付我钱；做不到，花多少钱都算我的，你们一分钱都不用掏。但我有个条件：你们不可以管我是怎么实现的，不要约束我必须达到什么参数、用什么流程，反正我给到你们想要的结果就是了。”很明显，这个合作模式更加市场化，当然对他的风险也更大——以前的方式供应商们都是旱涝保收的，埃隆愿意这么赌，是因为他很有自信，相信自己一定能把成本压到比同行低很多，这样利润空间也就更高了。另一边的 NASA 也是非常开心，没风险，就跟白捡了个宝贝似的。所以从 SpaceX 开始，后续他们就统一调整了跟供应商的合作模式，都照这么干，这下其他人可就笑不出来了。</p>
+        <h3 id="sec-2-3" class="subsection-title" data-toc-id="sec-2-3" data-toc-title="3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO</h3>
+        <p id="p-79" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">与此同时，就在埃隆带着 SpaceX 攻城略地的时候，另一家公司——<strong>特斯拉</strong>，也走进了他的生命。但很多人都不知道，其实他是半路才加入进去的，而且还贼鸡贼地跟人家创始人疯狂争权。</p>
+        <p id="p-80" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">时间回到 2003 年 10 月，斯坦福大学举办了一场创业研讨会，埃隆因为创办 SpaceX 后名声大振，受邀来到这里做演讲。台下有一位名叫 JB·施特劳贝尔（Jeffrey Straubel）的年轻创业者，他有一个电动车电池的项目正在寻找投资。他发现笔记本电脑上的锂电池能量密度很大，如果把上万块锂电池串联起来就可以做成一个动力很强大的电池包，这样就可以驱动一辆电动车跑很远。但这个想法太新了，需要大量资金去验证，当时根本没人愿意给他投钱，所以他希望来这里碰碰运气。会后他主动接近埃隆、跟他说了自己的想法，没想到埃隆非常感兴趣，当场承诺投资 1 万美元。随后 JB 就向他推荐了两个人——Tom Gage 和 Alan Cocconi，这两位创办了一家小公司叫做 AC Propulsion（AC 推进公司），是做电动车的，JB 的电池就是卖给他们的，当时已经做出了一辆原型车。</p>
+        <p id="p-81" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">埃隆第一次见到这辆车的时候就被震惊到了：那是一个无比粗糙的东西，没有车顶，甚至没有车门，但是加速贼快！毕竟埃隆自己就有一辆世界上最快的跑车，于是他非常激动地对这俩人说：“你们得把它做成一个真正的产品，这非常有前途！”但他们却表示想先做一辆家用车、从常规车型起步。埃隆认为这条路选错了，因为当时做一辆电动车成本还很高，大概是 7 万美元；如果要走家用车的路子就必须大幅降价，那就得砍掉材料成本、降低性能，这样一来车子就会变得平庸，很难再有记忆点和传播点。一个新事物如果一开始砸不出水花，那它就注定会被淹没。所以埃隆的建议是：电动车的出路只能从高端起步，可以先做一辆昂贵但足够惊艳的跑车，一炮打响后再转向大众市场。这其实就是后来特斯拉的成功路径了。</p>
+        <p id="p-82" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">然而 AC 推进公司的两位创始人拒绝了他的建议，埃隆也就没有再投资了，但他们却给埃隆透露了一个事后看足以改变世界的信息：“现在确实有一家电动公司正在做两门跑车，AC 推进公司还给它提供电机和动力传动系统，你们可以去找这家公司谈谈。”埃隆问：“这家公司叫什么？”他们说：“叫特斯拉。”</p>
+        <p id="p-83" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">特斯拉最早的创始人是马丁·艾伯哈德。2004 年 3 月，马丁和埃隆在 SpaceX 的办公室见面，两人一聊就是两个多小时，越说越投机。最后埃隆拍板，投资 640 万美元入股特斯拉，并出任特斯拉的董事会主席，马丁则担任 CEO。埃隆还打电话给做电池的 JB 邀请他过来一起干，于是 JB 也加入了特斯拉，担任首席技术官，还把他的电池方案也一起带了过来。</p>
+        <p id="p-84" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">然后就有了特斯拉第一辆跑车 Roadster。不过这辆车的制造方式很不“马斯克”，成本非常贵。后来特斯拉的杀手锏其实和 SpaceX 火箭是一样的，就是做垂直整合——尽可能自己生产关键部件，最大化地降低成本；可当时的 Roadster 基本没有自己生产的东西，电池、底盘、传动系统都是从供应商那采购来的，特斯拉的工厂只是把它们组装起来。2005 年 1 月这辆车的原型车造出来，零百加速只要 4 秒。埃隆试驾完立刻向特斯拉又追加了 900 万美元投资，他说要把这辆车量产。</p>
+        <p id="p-85" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">不过随着埃隆投资的钱越来越多，他的老毛病又犯了，变得越来越强势：他经常会越过其他高管，直接敲定很多产品细节，比如车身材料、座椅大小、车灯，甚至是门把手他都力排众议坚持要用电动门把手，因为这样看起来更酷。作者艾萨克森说，公允地讲，埃隆对细节的判断确实让这辆车更有魅力了，但问题是成本也增加了很多。本来用供应商的成熟零件最大的好处就是成本可控，但埃隆提了一大堆苛刻的个性化要求，人家必然就会加钱，而且工期也会延期。这样特斯拉变成了一只吞金兽，没多久埃隆投的钱就烧完了。为此他还在董事会上大发雷霆，批评高管们乱花钱。后来还是弟弟金伯尔站出来力挺高管团队，他拿出账本对埃隆说：“他们没有乱花钱，都是按你的要求花的。”言外之意就是：是你不顾大家反对做了太多改动，才造成了超支。那埃隆只好不接话了，默默地继续出去找钱。毕竟今时不同往日，老马现在已经是硅谷名人了，融钱自然也是容易了很多。所以 2006 年 5 月，他就给公司拉来了一轮 4000 万美元的融资。</p>
+        <p id="p-86" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">虽然是解了燃眉之急，但特斯拉真正的危机才刚刚开始——最大的麻烦还是公司该听谁的问题。埃隆跟原始初创团队关于控制权的争夺愈演愈烈：他觉得公司的钱基本都是自己搞来的，产品设计也参与了、而且还定了很多关键细节，自己肯定算是特斯拉的创始人；但马丁觉得自己才是正牌创始人，高管团队的核心人员都是他带过来的，公司名字也是他起的，埃隆只是个投资人。</p>
+        <p id="p-87" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">两人对各自角色的理解偏差造成了非常多的冲突。作为 CEO 的马丁经常接受媒体采访，各大媒体给他打的头衔也是“特斯拉的创始人”“第一辆电动跑车的发明者”之类的，很少提到埃隆的名字，甚至连特斯拉官方的新闻通告里提到埃隆都只强调他投资人的身份。以老马的性格这怎么能忍？必须找机会给自己正名。</p>
+        <p id="p-88" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">2006 年 7 月，在正式推出 Roadster 之前，特斯拉举办了一个新品发布会。发布会的策划方案是公司的公关负责人 Jessica 做的，她是马丁招来的人。临近发布会的时候，埃隆突然对 Jessica 大发雷霆，说：“你做的策划都是超级垃圾！”Jessica 反驳了几句，埃隆就直接让马丁给开了，然后亲自重新策划这场发布会——从嘉宾名单到菜单、餐巾纸，事无巨细都是自己独办。结果如他所料，这场亮相非常成功，现场请来了很多名流，比如好莱坞巨星、加州州长阿诺德·施瓦辛格；车发布后，施瓦辛格还付了 10 万美元成为了第一批 Roadster 的车主。媒体铺天盖地地夸这辆车、吹捧特斯拉有多牛，一切如埃隆计划的，这辆豪华跑车引爆了全市场。</p>
+        <p id="p-89" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">不过现在唯一的问题就是：马丁还是抢了他的光芒，新闻媒体里几乎很少提到埃隆的名字，甚至《纽约时报》还犯了一个致命错误，把马丁说成是了董事会主席。这下，不出意外的话就要出意外了。埃隆对着相关负责人就是一顿臭骂，之后他还干了件董事会主席通常不会干的事——亲自去拜访供应商，而且没有告诉马丁，多少有点架空 CEO 的嫌疑。不过他这么干也不完全是出于私人恩怨，因为当时特斯拉的财务状况确实非常糟：每辆车的制造成本严重超支，卖 10 万美元一辆还要亏钱；亏就算了，关键是核心零配件的产能不够，用户交了钱还迟迟拿不到车。这种时候埃隆当然着急，他跑到英国去催促供应商赶紧交货。当时特斯拉底盘是英国路特斯（莲花）公司生产的，他们也抱怨：“你们老是改来改去，我们生产也需要时间啊！”这其实也是全球供应链的风险所在了：当时特斯拉到处找供应商，任何一个环节出了问题，整车交付时间都得延迟。这让埃隆暗下决心，造车再也不能靠供应商了，太不可控，必须自己生产大部分零配件。</p>
+        <p id="p-90" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">那除了供应商效率低，埃隆觉得自家工厂的效率也不行。他找来了两个制造专家重新梳理了整个制造流程。这一梳理问题就出来了：专家们发现 Roadster 的真实成本比他们想的还要贵，最初下线的一批车如果算上管理成本，每辆车至少得要 14 万美元，量产后也不会低于 12 万美元——这就意味着他们每卖一辆车就要亏 2 万美元！更可怕的是，公司管理层竟然根本不知道这件事。很显然这是 CEO 的锅了，没有管好特斯拉的账本。对于制造业来说，成本线就是生命线。</p>
+        <p id="p-91" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">埃隆认为终于是时候摊牌了。2007 年 8 月，他公开质问马丁：“你说成本控制不会出问题，结果现在这种情况你怎么解释？”那马丁做错事也没啥好狡辩的，只好承认：“是我没有管好，找一个能替代我的人吧。”几天后，他在去公司的路上突然就接到了埃隆的电话：“我正式通知你，董事会一致同意免去你的 CEO 职务。”其实当时特斯拉还没有找到合适的替代人选，但埃隆已经等不了了——埃隆当初就是这么被赶出 PayPal 的，现在他把这招用到了别人身上。马丁离职后，他带来的人，包括最早和他创办特斯拉的马克（Mark Tarpenning），全都被埃隆清洗掉了。</p>
+        <p id="p-92" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">但俩人的恩怨还没有完：马丁之后创办了一个博客，就叫做“特斯拉创始人的博客”，专门在上面吐槽埃隆，甚至还附带着黑特斯拉这家公司。后来董事会其他成员提示他：“你好歹也是个股东，注意言辞。”但他依然我行我素，可见怨念之深。最后是特斯拉的律师威胁说“你再这样我们就要考虑收回你的股票期权了”，他才收敛了一点。当然了，埃隆也不是省油的灯，那段时间之后他也经常在公开场合攻击马丁，说他撒谎、是个骗子、故意造假账。2008 年夏天马丁以诽谤罪起诉了他，第二年双方达成诉讼和解协议，同意不再诋毁对方、统一口径今后都只能称对方为特斯拉的共同创始人。尽管有了这个协议，埃隆还是控制不了自己，后来每隔几个月就要上 Twitter 讽刺对方，说他是自己遇到过最糟糕的合作伙伴。作者后来去采访马丁，他也很无奈地说：“这事都过去十几年了，我不知道他为什么还在一直贬低我。我和马克创办了特斯拉，这家公司让他现在成了世界首富，难道这个回报还不够吗？”</p>
+        <p id="p-93" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 3. 结缘特斯拉、与艾伯哈德决裂并亲任 CEO">虽然把马丁赶走了，特斯拉之后走马灯似地换了好几个 CEO，但埃隆都不满意，因为这些人都不能百分百贯彻他的意志。最后董事会也烦了，说：“要不你来干吧？”嘿嘿，这不正合他意！2008 年 10 月，埃隆终于正式成为了特斯拉的 CEO。</p>
+        <h3 id="sec-2-4" class="subsection-title" data-toc-id="sec-2-4" data-toc-title="4. 第一段婚姻破裂与猎鹰一号首射失利">4. 第一段婚姻破裂与猎鹰一号首射失利</h3>
+        <p id="p-94" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 4. 第一段婚姻破裂与猎鹰一号首射失利">然而权力斗争上的胜利却没有给他带来好运，很快，埃隆·马斯克就迎来了一生中最艰难的时期。</p>
+        <p id="p-95" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 4. 第一段婚姻破裂与猎鹰一号首射失利">首先，这一年他和妻子 Justine 离婚了。这段婚姻给埃隆留下了五个孩子——其实本来是生了六个，但第一个孩子不幸夭折。埃隆虽然极度悲伤，但是他的脑回路和别人不太一样：他认为这么一个一个生效率太低了，所以后来五个孩子全部都是通过人工受精生育的，包括一对双胞胎和一组三胞胎。根据作者调查来看，这段失败的婚姻埃隆要负更多责任，因为他做事很强势，只有他命令别人、没有别人命令他的份，在婚姻里也是一样。但问题是 Justine 也很强势，所以俩人就是火星撞地球，见面就是没完没了地吵。再加上埃隆这么多年一直在创业，极其专注于自己的事业，即使成了亿万富翁，他大部分时候还是喜欢睡在办公室、全身心工作，这种生活方式也对家庭关系产生了巨大影响。更麻烦的是，我们知道他又缺乏共情能力，体会不到正常人的情感，更不会有愧疚感——甚至在妻子跟他提出离婚的时候，他还说：“我不想离，我想继续维持下去，但你非要离，我必须接受现状。”也就是说他不觉得自己需要做出任何改变，那就注定只能分道扬镳了。</p>
+        <p id="p-96" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 4. 第一段婚姻破裂与猎鹰一号首射失利">在离婚后的几个月，埃隆又遇到了 22 岁的英国女演员 Talulah Riley，俩人只认识了两个星期就订婚了。然而这样的喜讯并没有止住埃隆在事业上的厄运，SpaceX 很快就出了大问题。</p>
+        <p id="p-97" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 4. 第一段婚姻破裂与猎鹰一号首射失利">之前我们说过，为了拿下 NASA 和国防部的发射订单，他信心满满地承诺按结果收费：发射成功了才付款，失败的话分文不取。可是对于一家从来没有发射过任何一枚火箭的小公司来说，这肯定是有点自信过头了。2006 年 SpaceX 的第一次试射就失败了，第一枚猎鹰一号火箭在空中飞了 25 秒就因为发动机起火坠落。埃隆对作者说，看到火箭解体的那一刻他五脏俱焚。但当时他还是故作轻松地跟团队说：“结局我早就猜到了，第一次任务失败很正常，我们再造一枚火箭，第二次也许还会失败，但我们最终一定能成功。”</p>
+        <p id="p-98" data-section-title="二、SpaceX 诞生与特斯拉的“夺权”之战 · 4. 第一段婚姻破裂与猎鹰一号首射失利">但其实，他内心对于失败是耿耿于怀的。第二天 SpaceX 的核心人员开会，火箭推进部门负责人汤姆·穆勒分析，发动机起火应该是燃料泄漏引起的。埃隆心底的火再也压不住了，突然发飙说：“你知道有多少人告诉我应该炒了你吗？”汤姆愣了一秒，心想这真莫名其妙，火气也上来了，直接回击：“那你就开了我呀！”埃隆说：“我不还没解雇你吗？你不还在这吗？”现场氛围一秒凝固，谁都不敢说话了。为了缓解尴尬，低情商马在会上放了一部无厘头电影，结果更尴尬了，大伙都不知道发生了什么。埃隆总是喜欢用一些幽默来掩盖情绪，但是他的幽默大部分人都欣赏不了，所以经常弄巧成拙。</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link prev" href="#ch-1"><span class="pager-dir">← 上一章</span><span class="pager-name">一、南非童年、父母离异与硅谷起步</span></a><a class="pager-link next" href="#ch-3"><span class="pager-dir">下一章 →</span><span class="pager-name">三、2008 绝境翻盘与“太空首富”争霸战</span></a></nav>
+      </section>
+
+      <section class="chapter-section chapter-deferred" aria-labelledby="ch-3">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 03</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">至暗时刻的绝地求生与商业帝国崛起 · 约 9,922 字（19 分钟）</span>
+          </div>
+          <h2 id="ch-3" class="chapter-title" data-toc-id="ch-3" data-toc-title="三、2008 绝境翻盘与“太空首富”争霸战">三、2008 绝境翻盘与“太空首富”争霸战</h2>
+        </header>
+                <h3 id="sec-3-1" class="subsection-title" data-toc-id="sec-3-1" data-toc-title="1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转</h3>
+        <p id="p-99" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">这次争吵后，埃隆制定了一条规则：每个零件、每个流程和每条规范都必须落实到人，出了问题就要追责到个人。这次燃料泄漏，大家分析应该是固定燃料管线的螺母出了问题。埃隆据此认定这就是工程师 Jeremy Hollman 的责任——他是穆勒招进公司的第一批员工，在发射前一天做最后检查时他拆过那颗螺母。但这只是埃隆的个人猜测，当时的调查结果还没有出来。可出乎所有人意料的是，在媒体采访时埃隆竟然公开指责 Jeremy，他讽刺说：“我们最有经验的技术人员犯下了这么低级的错误。”</p>
+        <p id="p-100" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">Jeremy 当时正在火箭发射地、太平洋的夸贾林岛上，他正在分析火箭的残骸碎片，试图找到失败的原因。完事后返回洛杉矶，在飞机上读报纸时看到了埃隆对他的公开指责，整个人都吓傻了。飞机一落地，他就杀气腾腾地冲进埃隆办公室，俩人激烈地吵了一架。Jeremy 希望公司撤回埃隆的公开表态，他的上司穆勒也支持他；但埃隆却说：“我是 CEO，我负责和媒体打交道，对外怎么说我来定，你们都不要插手。”Jeremy 彻底被激怒了，他说：“除非我永远不和埃隆打交道，否则我就不会继续留在公司。”没多久，他果然就离开了 SpaceX。</p>
+        <p id="p-101" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">然而事后也证明，Jeremy 确实没有犯错：技术团队分析火箭碎片发现，他动过的那颗螺母在爆炸后还牢牢地拧在燃料管上；真正的问题是，那颗螺母被夸贾林岛上的海风腐蚀了。那螺母为什么会被腐蚀呢？有两个原因：一是这玩意儿是用廉价铝制成的，这种材料不耐腐蚀，而之所以会选这种材料也是因为埃隆逼着团队尽可能省钱，这种材料是他亲自批准敲定的；那第二个原因是，发射基地夸贾林岛上的湿气太重，而这个发射基地的选址也是埃隆亲自拍板的——当时其实有两个地方备选，但另一个地方的负责人对埃隆比较冷淡，夸贾林岛这边的人特别热情，甚至还铺了红地毯来欢迎他，所以埃隆就下不了台，当场就选了这里。显然，他为自己的虚荣心付出了过于昂贵的代价。作者后来问穆勒对 Jeremy 和马斯克的争执怎么看，他说：“太可惜了，我们公司失去了一个优秀的人才。”但当同样的问题问到埃隆时，他却说：“我不记得这事了，不过 Jeremy 可不是个好工程师。”</p>
+        <p id="p-102" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">2007 年时隔一年，SpaceX 进行了第二次试射。这一次埃隆不再一味地催促团队加快步伐，他开始强调要小心谨慎。团队列出了 15 大风险清单，因为成本和时间的限制，他们决定重点解决前 10 大风险，这 10 项风险清单就成了每次检查的必查项目；至于后面几个，他们判断发生的概率不高，就决定冒险跳过。发射当天，第一级火箭成功了，同事们已经开始欢呼，但埃隆面无表情；等第二级火箭按计划分离，埃隆才露出了笑容。5 分钟过去，一切顺利，大家一片欢腾，都开始开香槟庆祝了。但随后，火箭开始摇晃，虽然已经到达了外太空，但没能进入预定轨道就坠落了。而经过事后分析，恰恰是第 11 项重大风险导致了这次火箭试射失败！所以冒险终究是有赌输的时候。埃隆说：“那以后我们的风险清单就是 11 项了。”</p>
+        <p id="p-103" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">到了第三次发射，所有人——包括埃隆——都相信这是 SpaceX 最后的机会了。他对大家说：“我的钱就只够发射三次，这次如果还搞不定，我们就得关门。”所以这次大伙检查得更加仔细，距离上一次试射失败 17 个月后，他们才进行第三次试射。这次所有人都决定全力以赴、不留后路。之前的试射他们没有在火箭上放卫星，因为害怕万一发射失败白白损失了造价不菲的卫星；但这次他们在火箭上装上了一颗美国空军的卫星、两颗 NASA 的卫星，甚至还有詹姆斯·杜汉的骨灰——他是航天迷最喜欢的电影《星际迷航》中扮演斯科蒂的演员。当天每个人都屏住了呼吸、疯狂祈祷，结果却再一次让他们沉默：第三次试射还是失败了，卫星和骨灰都掉进了大海。</p>
+        <p id="p-104" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">那一刻，全公司都觉得埃隆会发飙，会像往常一样把过错怪罪给某个人。但让大家意外的是，这次他却非常冷静。他说：“我们在洛杉矶工厂里放着第四枚火箭的零件，你们尽快组装好，把它运到夸贾林岛的发射场。”所有人一下子就跳起来了，好多人都哭了——原来马老板还留了一手，大家还有最后一次机会！不过埃隆又说：“我们这次只有 6 个星期的时间就要发射第四枚火箭。”这是一个几乎不可能完成的任务，因为前几次发射都至少准备了一年，现在要压缩到 6 个星期，怎么可能做得到？</p>
+        <p id="p-105" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">您可能会问：埃隆这小子是不是又在玩“取法其上、得乎其中”的游戏，故意给大伙极限施压？这次还真不是，他是真的没钱了，他的所有身家只能撑到 6 个星期。别忘了，当时在烧钱的可不止 SpaceX，特斯拉的资金链也告急。2008 年 2 月，经过供应商一拖再拖，特斯拉的 Roadster 终于下线了第一台量产车，但公司的资金也已经用完了，埃隆只能剑走偏锋，动用了客户的定金来维持公司运转。董事会成员说：“这不符合规定，还没交货的钱不是公司合法收入，挪用是违规的。”他回答道：“那你让我怎么办，不然我们就只能死掉了。”</p>
+        <p id="p-106" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">整个 2008 年的秋天，埃隆都在四处借钱，为特斯拉员工支付工资。但倒霉的是这一年金融危机又爆发了，很多人都破产了，弟弟金伯尔几乎损失了所有的钱，能动用的资产只剩下 37.5 万美元的苹果公司股票。他本来打算用这笔钱支付贷款利息，但埃隆却说：“你把它卖了，投给特斯拉救急。”金伯尔一贯是很宠哥哥的，于是他就咬咬牙把股票全割了。那会儿埃隆跟很多朋友都借过钱，比如谷歌创始人谢尔盖·布林就借过他 50 万美元，甚至他还向特斯拉普通员工借钱。所以他当时真的是一分钱都拿不出来了，连住的地方都没有——因为房子给了前妻，是谷歌另一位创始人佩奇收留了他，离婚的律师费都是打了白条。那段时间，他抑郁到经常在睡梦中尖叫，有时候还会冲到洗手间呕吐。</p>
+        <p id="p-107" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">埃隆的朋友劝他：“为啥不放弃一家公司呢？双线作战是赢不了的，放弃特斯拉吧。”他斩钉截铁地拒绝了，他说：“放弃特斯拉就等于向全世界宣布电动车不靠谱，我绝对不干；SpaceX 也绝不能放弃，放弃了人类永远就不能跨行星旅行了。”穷困潦倒的时候，心里想的还是自己的使命。</p>
+        <p id="p-108" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">就在这时，埃隆在 PayPal 的联合创始人们来了——他们 8 年前亲手把他赶出公司，现在竟然是他们来拯救老马！PayPal 被收购之后，彼得·蒂尔联合 PayPal 几个老同事成立了一个风投机构，在千钧一发的时刻，他们给这位相爱相杀的老战友送来了 2000 万美元的投资。我们之前说过，当初被赶出公司埃隆本可以报复他们，但他选择了跟大家握手言和；而 8 年后，这个决定救了自己一命。埃隆说他一直相信因果报应是真的。这笔投资给到埃隆的时间是 2008 年 8 月 3 日，正好是 SpaceX 第三次火箭发射失败的当天，这才让他可以冷静地对员工们说：“我们还有第四次机会。”</p>
+        <p id="p-109" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">不过这些钱也撑不了多久，最多只能撑 6 个星期，而正常情况下这个工作量需要一年。当时他们光是用船把火箭零件从洛杉矶运到太平洋上的夸贾林岛就至少需要 4 周，然后还要在剩下两周内完成火箭组装、调试和发射，这看起来绝对不可能。常规方法行不通，就只能剑走偏锋了，埃隆决定采用空运：他向美国空军租了一架 C-17 大型运输机，把火箭零件直接送到发射地以节省时间。可是在运输机飞到夏威夷上空时需要落地加一次油，就在飞机下降的过程里突然传来一声巨大的爆裂声，随行的工程师发现火箭竟然被压扁了，就像是被捏扁的可乐罐！为什么会这样呢？因为飞机快速下降、气压迅速增加，火箭内外的气压不均衡就把它压扁了。这时候工程师们都慌了，手忙脚乱地找火箭阀门让空气快速流进去。还好，在气压平衡后火箭又恢复了圆柱形，但出现了好几处凹陷，其中一个挡板的位置也发生了位移。这简直也太背了，最后一次机会难道就要这么溜走了吗？工程师们一个个面如死灰，他们打电话给埃隆，建议原地掉头把火箭带回洛杉矶检修。这时候的埃隆沉默了一分钟，没有人知道在这一分钟里他内心经历了怎样的思想斗争。然后他冷静地说：“别回来，你们继续前往夸贾林岛，在那边修复火箭，需要什么零件和工具告诉我，我明天坐飞机给你们送过去。”显然，埃隆决定最后再赌一次，这次真的是孤注一掷了。</p>
+        <p id="p-110" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">结果，这回运气终于站到了 SpaceX 这边：火箭的损伤没有想象中那么严重，他们只用了 5 天就修复好了。不过毕竟还是额外花了很多钱和时间，留给他们发射火箭的时间更少了。埃隆决定再次冒险，他推翻了自己亲自制定的检查流程，对工程师们说：“这次能多快就多快，觉得问题不大的检查环节可以直接略过。”那后面的故事我们就知道了：猎鹰一号这一次终于成功发射！这是人类历史上第一枚由私人制造并发射到预定轨道的火箭——他们自己设计制造、几乎没有外包环节，资金也完全由私人提供。尤其在考虑到 SpaceX 只有 500 名员工，而波音光火箭部门就有 5 万人，我们不得不承认这是一次壮举。当然也有人说，埃隆只是运气好，他最后这次试射都没认真检查，这在航天业可是大忌，成王败寇，他只不过赌赢了而已。可话又说回来，世界上有几个人敢自掏腰包像他这么赌呢？本来都赚到十几亿可以躺平养老了，偏要赌上全部身家去做一件在过去看来几乎不可能的事情。其实一切巨大财富的背后都藏着一场赌局：虽然我们经常说投资理财不要有赌心，可在面对人生重大机遇的时候，你那一刻的选择就是会决定你的命运，所以也有句老话叫做“犹犹豫豫的人干不成大事”。</p>
+        <p id="p-111" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 1. 2008 年至暗时刻：三连败、破产边缘与第四发逆转">在猎鹰一号发射成功后，SpaceX 终于度过了难关，他们完成了之前的商业订单，从国防部和 NASA 拿到了服务费；随后 NASA 又给 SpaceX 送来了一份价值 16 亿美元的新合同，埃隆一下子就从地狱跳到了天堂，他甚至兴奋到把自己的电脑登录密码都改成了 `I love NASA`。</p>
+        <h3 id="sec-3-2" class="subsection-title" data-toc-id="sec-3-2" data-toc-title="2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市</h3>
+        <p id="p-112" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">不过这时候埃隆的救火任务并没有完成，他的另一家公司特斯拉此时还在泥潭里苦苦挣扎。2008 年底，特斯拉的现金也全断了，下个月的工资都发不出来。埃隆用尽了所有的能量，终于找到了一笔 2000 万美元的融资，但是引入新资本需要老投资人的同意——特斯拉之前的投资人、VantagePoint（优势资本）掌门人艾伦·萨尔茨曼却一直不同意。</p>
+        <p id="p-113" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">你可能不理解：他为啥不让新资本进来呢？要是特斯拉真的破产了，他不也是血本无归了吗？其实这又是艾伦和埃隆长期矛盾的爆发了，人家故意的。艾伦认为特斯拉未来的发展方向应该是成为一家电池公司，给全世界的汽车企业供应电池，他认为这才是门大生意；但埃隆觉得这个想法很愚蠢，他压根就看不上那些传统汽车公司，认为那些都是快沉了的船，你还非要去搭他们的便车，不是找死吗？站在今天，我们当然觉得埃隆真是高瞻远瞩；可在十几年前那还是燃油汽车如日中天的时代，主流的燃油车厂之前也都研发过电动车，但后来却不约而同地把项目砍掉了。所以大家直觉上就会认为：那么大的公司，人才、技术、资金全都有，连他们都搞不成，特斯拉一家小公司凭什么可以呢？所以艾伦拒绝为特斯拉找新股东，甚至又动了换掉埃隆的念头。</p>
+        <p id="p-114" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">眼看着到手的 2000 万投资拿不到，怎么办呢？埃隆想到了一个绕开优势资本的方法：不靠卖股权融资，直接去借。说起来他也真的是运气好。2009 年，美国政府为了挽救在金融危机里垂死挣扎的汽车三巨头，推出了一个救助计划，特斯拉成功申请到了能源部 4.65 亿美元的贷款，这笔钱简直就成了救命钱。但这里又有个问题：拿政府的钱流程非常复杂和漫长，特斯拉要等到 2010 年才能拿到第一笔钱，埃隆还是要另想办法挺过 2009 年。</p>
+        <p id="p-115" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">那么这一年，谁又会成为特斯拉的救世主呢？你们肯定想不到，竟然是<strong>奔驰</strong>！此前埃隆曾去德国拜访奔驰总部，奔驰高管随便提了一嘴：“我们也对造电动车有兴趣，明年我们会访问美国，到时候我们可以和特斯拉开个研讨会，看看能不能合作，给奔驰 Smart 出个电动版啥的。”言者无心、听者有意，以埃隆的个性怎么可能让这种机会溜走？回去后他立刻买了一辆燃油版的 Smart，让团队把特斯拉 Roadster 的电机和电池包改装上去，这就造出了一辆电动 Smart 原型车。2009 年 1 月，德国奔驰的高管们如约来到特斯拉，埃隆回忆说他们当时表现得特别不耐烦，仿佛一分钟都不想多待，估计以为就是来走个过场、听几页 PPT 的。结果没想到遇上埃隆这么个狠人，他直接把电动 Smart 原型车开了出来，邀请各位领导上去开一圈。要知道那可是零百加速 4 秒的动力系统，装在 Smart 这种微型车上，加速能力那堪比火箭！当奔驰高管们轮流试驾后，直接惊到合不拢嘴，比家里那些超跑都要得劲。回国后，他们立刻就让奔驰和特斯拉签了个大合同，让他们为 Smart 提供电池包和动力总成——特斯拉莫名其妙地就成了奔驰的电池供应商。更有意思的是，这件事本来就是当初艾伦坚持让特斯拉走的方向，也是埃隆强烈反对的，但恰恰是它拯救了特斯拉。所以，命运的安排就是这么有趣。</p>
+        <p id="p-116" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">好事还没完，4 个月后，奔驰直接向特斯拉投资了 5000 万美元。埃隆告诉作者：“要是 2009 年没有这笔钱，我们就倒闭了。”正是这笔钱让特斯拉成功续命，安全等到了后面政府的巨额贷款。这下埃隆终于可以放开手脚在电动车上大展拳脚了，他决定进军主流量产的四门轿车市场，售价大概是在 6 万美元左右，这就是我们后来熟知的特斯拉 Model S。</p>
+        <p id="p-117" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">到这里，埃隆的两家公司都成功实现了谷底反弹，还都拿到了大笔资金。此后的 SpaceX 和特斯拉虽说挑战还是很多，但再也没有遇到过这种生死存亡的时刻了。猎鹰一号之后，SpaceX 又成功研发了猎鹰九号，动力是猎鹰一号的 9 倍，成本却是行业平均水平的十分之一；而且这家私人火箭公司不仅能把无人太空舱发到预定轨道，还能把它安全送回地球——在这之前，能做到这一点的只有三个国家：俄罗斯、中国和美国。SpaceX 的成功也让老美政府的太空政策出现了重大转向：因为在冷战后苏联这个强大的对手消失了，NASA 就越来越不受重视，经费一再被压缩；而埃隆的出现给美国航天业带来了低成本的解决方案，于是美国官方开始大力扶持 SpaceX，各种政策倾斜和订单接踵而至。</p>
+        <p id="p-118" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">而特斯拉这边解决供应链的方案，也让人感到很惊奇。在推出 Model S 后，特斯拉消耗了全球 10% 的动力电池。考虑到未来要造更多进入大众市场的车，比如 Model Y 和 Model 3，埃隆决定亲自掌控电池的产能。他在美国内华达州建了一座超级工厂，专门生产电池。而且这座厂子还被日本松下集团看中，投资了 40%，大概有 20 亿美元。工厂建成后，由松下生产电池单元，特斯拉把电池单元组装成电池包，各干一段活。松下之前本来就是特斯拉的电池供应商，他们之所以愿意投钱，完全是被埃隆的小演技“拉下水”的：他在跟松下讨论合作建厂的时候，故意在工厂选址上放了一些挖掘机，让他们 24 小时灯火通明地工作，实际上就是在演戏；埃隆还带威胁的语气跟对方说：“你们上不上车？不上我可就自己干了，以后特斯拉用自己的电池，我的电池厂还会和你们直接竞争，到时候损失可就不大了。”这可把松下的日本人给唬住了，赶紧掏钱跟特斯拉合作建厂。</p>
+        <p id="p-119" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 2. 奔驰 5000 万救命钱、超级工厂与特斯拉上市">2010 年，特斯拉成功上市，当天股价就上涨了 40%，融资 2.66 亿美元。资本市场的这个敞口打开后，埃隆就有了源源不断的钱，再也不用为了钱到处求人了。</p>
+        <h3 id="sec-3-3" class="subsection-title" data-toc-id="sec-3-3" data-toc-title="3. 39A 发射台、太空回收口水战与星链计划">3. 39A 发射台、太空回收口水战与星链计划</h3>
+        <p id="p-120" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">2013 年，SpaceX 为了更好地扩展业务，决定在美国最有象征意义的发射地——卡纳维拉尔角，租下那座传奇的 39A 发射台。因为在 1969 年，美国阿波罗号登月就是在这个位置升空的，堪称航天行业的图腾。当然了，按照规定租发射台也得走招标流程。埃隆觉得自己十拿九稳，不过就是走个过场而已，没人和他争。结果没想到，半路杀出个程咬金，非要和他争这个宝贝。这位就是亚马逊创始人、前几年的世界首富——杰夫·贝索斯。</p>
+        <p id="p-121" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">他和埃隆一样，也喜欢读科幻小说，也有一个太空梦；但是他比埃隆出手更早，早在 2000 年就创办了一家名叫“蓝色起源”的太空探索公司，连想法都和埃隆如出一辙：也要打造可重复使用的火箭，降低太空发射成本，然后带着人类一起走向宇宙。所以曾几何时，埃隆和贝索斯还是太空圈的好网友，2004 年见面后还互相参观了彼此的公司、交流心得。埃隆给蓝色起源提了很多建议，他说：“你们现在走的这条路我之前都试过，行不通，别重蹈我的覆辙。”但是当时他的火箭还没发射成功，所以贝索斯也没拿他当回事。2005 年，埃隆还邀请贝索斯给自己前妻 Justine 的书写过书评，由此可以看出他们之前的关系真的还可以。</p>
+        <p id="p-122" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">所以这次贝索斯突然跑来跟自己竞标，让埃隆非常意外。当然最终 SpaceX 在竞标中打败了蓝色起源，成功拿下 39A 发射台。可谁也没想到，贝索斯居然提起了诉讼，指控 NASA 偏袒 SpaceX。这让老马大发雷霆，毫不客气地说：“你蓝色起源连个牙签都没送上过太空轨道，有什么资格质疑？要是 5 年内你们能做出来符合 NASA 认定标准的飞行器，还能和空间站成功对接，我就把 39A 发射台拿出来给你用；不过嘛，我看你们的火箭飞不出大气层就得掉下来。”这张讨厌的嘴，也成功让俩人彻底闹翻了。贝索斯提起的诉讼也不了了之，然后他就跑到 39A 发射台旁边租用了 36 号发射台，就是恶心你！两位超级富豪就跟孩子赌气似的，开启了一场激烈的太空竞赛。</p>
+        <p id="p-123" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">2014 年，埃隆因为在太空探索领域的突出贡献被授予总统奖。授奖后有个晚宴，他在上面口吐豪言，说自己一定能做出可以重复使用的火箭，到时候去火星旅行一趟的费用会降低到 50 万美元。当时贝索斯也参加了那场晚宴，几周后他便申请了一项专利，叫“太空运载火箭在海上着陆”。意思就是他们要在海上搭建一个平台，然后用这个平台回收火箭，别人这么做就要给他钱。埃隆知道后气到面色铁青，说这人疯了——在海上着陆这个想法半个世纪前就有人提出来了，他还拿去申请专利，太荒谬了！反手就给了贝索斯一个起诉，让法院撤销了这项专利。这回梁子算是彻底结下了，从此两人的较劲愈演愈烈，口水战也越打越响。</p>
+        <p id="p-124" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">2015 年，SpaceX 的可回收火箭猎鹰九号试射，火箭在升空两分钟之后爆炸、发射失败，这终结了他们自己连续 7 年发射成功的记录。几个月后，蓝色起源也发射了一枚火箭，11 分钟后飞到了离地面 100 公里的高度（这个高度算是刚刚摸到了外太空），然后在 GPS 的引导下火箭重返地球、稳稳地落回了地面。贝索斯对着全球媒体宣布了这次胜利，他说：“这是人类第一枚成功回收的火箭，这项技术将改变太空行业的游戏规则。”埃隆看到后立刻就火大了，他说：“真正的火箭回收是要把有效载荷发射到预定轨道上之后再把火箭收回来，而蓝色起源回收的不过是亚轨道的玩意儿，这有啥难的？过去 3 年我们用猎鹰九号原型机做到过 6 次，贝索斯就是个偷换概念的吹牛大王！”</p>
+        <p id="p-125" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">那么埃隆说得对吗？作者说，真正有价值的火箭回收确实是他说的那样，要送完货再回来，这个难度要高很多，因为能运载货物的火箭都是大火箭，而贝索斯他们只是回收了个不运载货物的小不点。不过作者也指出，埃隆也不比贝索斯实诚到哪去：他说过去 3 年他们做过 6 次亚轨道内的小火箭回收，这也是在夸大其词——实际上 SpaceX 做的小火箭回收测试高度只有一公里多，而贝索斯都飞出大气层了。</p>
+        <p id="p-126" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">当然在造大火箭方面，SpaceX 的技术要比蓝色起源领先很多。对他们来说，用火箭把货物送进轨道这前半段的技术是成熟的，他们只需要搞定后半段——也就是在火箭送完货后把它收回来。反正埃隆是憋着一口气的，誓要把贝索斯抢走的噱头抢回来，因为他特别在意这种“人类第一次干什么什么”的头衔不属于自己。所以在贝索斯回收火箭大约四周后，2015 年 12 月 21 日，SpaceX 的猎鹰九号再次发射，真的实现了回收，而且这次还配了有效载荷。当天，猎鹰九号冒着尾烟缓缓降落在着陆台上的视频传遍了世界，大家都惊呼科幻电影里的场景真的变成了现实。那贝索斯对此又是什么反应呢？他发了条推特说：“恭喜 SpaceX 实现了亚轨道级别的助推器成功着陆，欢迎加入着陆俱乐部。”这意思就是明褒暗讽，故意把 SpaceX 的成果划到了亚轨道级别、跟蓝色起源一个水平。但从技术上来说，贝索斯说的也有一定道理，因为这次虽然火箭带了有效载荷，但毕竟助推器没有进入预定轨道。但埃隆显然对贝索斯的话不屑一顾，他认为这次发射已经表明了大家是完全不同水平的公司。后来也证明埃隆是对的，因为从那之后两家差距就越来越大了：从 2015 年到 2023 年，SpaceX 完成火箭回收 200 多次，一骑绝尘，没有任何一家民营航天公司能再对他们形成挑战。</p>
+        <p id="p-127" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">你可能会觉得，两个当过世界首富的人在那烧钱斗法，虽然听着很过瘾，但终究离我们普通人的生活太遥远。其实他们也是有亲民业务的。比如 2015 年，埃隆在 SpaceX 推出了著名的<strong>星链计划</strong>（Starlink），简单来说就是往近地轨道发射巨多卫星，来给地面上的用户提供网络服务。其实他搞星链就是为了赚点钱给 SpaceX 输血，毕竟太空梦太贵了。据埃隆测算，全球互联网服务收入一年是 1 万亿美元，要是能有 3% 的市场占有率就有 300 亿美元了，这可比 NASA 全年的预算都高了。而且星链用的是近地轨道卫星，高度很低，只有 500 多公里，所以相比使用 35000 公里高的地球同步卫星，星链的网络信号延迟更小。当然了，也是因为太低，所以每颗卫星覆盖的面积很有限，需要超级多颗才能覆盖全球。埃隆的目标是未来要发射 4 万颗星链卫星。这么庞大的数量，就必须得造出一种非常便宜的卫星来。他要求团队把成本压到普通卫星的 1%，生产速度也要快 10 倍。星链团队说：“这不可能。”他就直接把这个团队全部开掉了、重新招人，也真的是个狠人！反正埃隆的风格就是，他的要求你只能说好，必须想办法实现，不可以有质疑；你敢说他的要求不对，那就很可能走人。他的口头禅是：“这事违反物理规律吗？不违反物理规律，那为什么不能做到？”在马老板的压榨下，新的星链团队最后真的做出了一种成本只有 1%、功能也非常简单（只用来通信）的小卫星。截至 2024 年，星链计划已经发射了 6000 多颗卫星，有 100 多个国家和地区都开通了星链服务。</p>
+        <p id="p-128" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">那作为老对手，贝索斯也紧跟其后，宣布亚马逊也要打造一个“柯伊伯计划”，发射几千颗卫星为全球提供互联网服务，不过直到 2023 年他们才开始试发射卫星，速度明显比埃隆落后很多了。</p>
+        <p id="p-129" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">但老贝也不是次次都学人家，他也有主动出击的时候。2020 年贝索斯宣布要亲自乘坐蓝色起源公司的火箭飞向太空，成为第一位进入太空的亿万富翁。所有人都看向了埃隆：他会不会接招？结果还没等埃隆回应，维珍集团的老板、英国亿万富翁 Richard Branson 半路杀了出来——他也有一个自己的太空旅行公司叫维珍银河。Richard 抢在贝索斯上天前 9 天升空，把这个“第一人”的头衔给抢走了。更有意思的是，在 Richard 发射火箭当天，埃隆带着孩子们去现场给他加油助威——果然，敌人的敌人就是好朋友。9 天后贝索斯也终于上天了，他比 Richard 飞得更高：Richard 只飞了 85 公里，而他越过了 100 公里的卡门线（这个卡门线就是大部分国家认可的太空和地球的分界线，不过 NASA 的标准是 80 公里，所以按照这个标准 Richard 也算进入到太空了）。</p>
+        <p id="p-130" data-section-title="三、2008 绝境翻盘与“太空首富”争霸战 · 3. 39A 发射台、太空回收口水战与星链计划">那么埃隆为什么没有去争这个第一呢？其实是因为他认为自己的使命是让全人类飞出去，SpaceX 公司当然有能力把他送到卡门线，但亿万富翁去做这种表演会让大众产生不好的印象，给人感觉这是有钱人的游戏，不利于引导全人类做太空探索。2020 年，猎鹰九号把两名 NASA 宇航员送到国际空间站，这是人类有史以来第一次由私营公司把人类送到预定轨道——跟几个亿万富翁飞到太空边缘摸一把相比，难度不在一个层面。不过以埃隆的个性，完全不和别人比也是不可能的，所以 2021 年 9 月 SpaceX 发起了一次“灵感四号”航天行动，说白了就是有偿送人上天：四个人进入灵感四号飞船，在太空飞行三天后重返地球，这也是人类历史上第一次普通人单独执行的轨道飞行任务，他们没有专业宇航员的陪同，飞船飞行高度达到 585 千米，是当时载人飞行的高度纪录。而在 2024 年，SpaceX 公司的龙飞船更是把四名非专业宇航员送到了创历史纪录的 1400 公里高度。显然，埃隆善于挑起战争，也善于赢得战争。</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link prev" href="#ch-2"><span class="pager-dir">← 上一章</span><span class="pager-name">二、SpaceX 诞生与特斯拉的“夺权”之战</span></a><a class="pager-link next" href="#ch-4"><span class="pager-dir">下一章 →</span><span class="pager-name">四、AI 暗战、自动驾驶执念与政治转向</span></a></nav>
+      </section>
+
+      <section class="chapter-section chapter-deferred" aria-labelledby="ch-4">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 04</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">人工智能分歧、自动驾驶之争与立场转向 · 约 9,682 字（18 分钟）</span>
+          </div>
+          <h2 id="ch-4" class="chapter-title" data-toc-id="ch-4" data-toc-title="四、AI 暗战、自动驾驶执念与政治转向">四、AI 暗战、自动驾驶执念与政治转向</h2>
+        </header>
+                <h3 id="sec-4-1" class="subsection-title" data-toc-id="sec-4-1" data-toc-title="1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI</h3>
+        <p id="p-131" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">不过就在民营航天领域埃隆独孤求败的时候，一个新的改变世界的机会进入到了他的视野。</p>
+        <p id="p-132" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">之前我们讲了，当初硅谷创投教父彼得·蒂尔的一笔关键投资拯救了 SpaceX。他有个习惯，每年都会组织一次聚会，把自己投资过的公司创始人叫到一起，大伙互相认识认识。2012 年，埃隆在他的年度聚会上认识了一个 AI 专家，叫做戴密斯·哈萨比斯，俩人聊得特别投缘。戴密斯那时正带着自己的 DeepMind 公司在做人工智能——几年后，这家公司就以 AlphaGo 一举成名，连围棋界的传奇人物李世石都被打败了。当时戴密斯跟埃隆聊到了一种可能性：他说机器持续进化下去，它的智力水平终有一天会超越人类，甚至会威胁到我们。埃隆听完后沉默了一分钟，立马觉醒，决定投资 500 万美金给 DeepMind——因为他认为要让机器为人类所用、又要确保不出风险，就需要像戴密斯这样的人来深入研究。</p>
+        <p id="p-133" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">几周后，埃隆又去见了他的老朋友、谷歌创始人拉里·佩奇。当时两人已经认识 10 年了，之前埃隆遭遇谷底、穷困潦倒、房子都没了的时候就经常住在佩奇家里。埃隆把戴密斯的想法和对人工智能潜在威胁的看法告诉了佩奇，但对方却很不屑。埃隆说：“我们必须现在就建立防火墙，否则等人工智能有能力取代人类，一切就晚了。”佩奇认为，要是有一天机器真的比人聪明、把人类淘汰了，那也是物尽天择、优胜劣汰——物种不都是这么一路进化过来的吗？人类凭什么能永远主宰地球？埃隆反驳说：“我们人类的意识是宇宙中最宝贵的东西，不应该让它消失。”佩奇说：“你这就是典型的人类中心主义，不就是觉得人类比其他物种高一等吗？”埃隆说：“对呀，不然呢？我是人类一份子，难道不应该为人类存亡着想吗？”俩人争了个面红耳赤，反正谁也说服不了谁。</p>
+        <p id="p-134" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">2013 年底，埃隆突然听说谷歌正准备收购 DeepMind，他显然非常不高兴，甚至去找朋友们凑钱帮 DeepMind 融资，想要阻止这场收购。2014 年，谷歌还是正式收购了 DeepMind。不过在埃隆的纠缠下，佩奇最后也做出了一点让步：他同意成立一个人工智能安全委员会，并让埃隆加入。这个委员会的第一次会议就是在 SpaceX 总部召开的——结果你猜怎么着？这也是最后一次开会！埃隆很快发现所谓的安全委员会就是个空壳，是佩奇用来哄他的，谷歌根本不关心人工智能的安全问题。埃隆感觉被骗了，痛心疾首。为了反抗，之后他不停在各种场合演讲警告人工智能的潜在威胁；他还正儿八经地拉着彼得·蒂尔、里德·霍夫曼这些 PayPal 前同事讨论如何对抗谷歌、提高人工智能的安全系数；甚至他还联系了当时的美国总统奥巴马，希望国家层面能对这个问题予以重视和监管——奥巴马嘴上表达了认同，然后就没有然后了。</p>
+        <p id="p-135" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">不过在埃隆的不懈努力下，还真找到了一个破局点：他认识了一个叫做山姆·奥特曼的软件公司创始人。奥特曼很同意他的观点，他俩都试图打破谷歌在人工智能领域的垄断，确保 AI 为人类服务而不是威胁人类。于是俩人在 2014 年联合创办了一个名叫 <strong>OpenAI</strong> 的非盈利实验室——这个名字你们都应该很熟悉了吧，OpenAI 靠着一款叫 ChatGPT 的聊天机器人，2023 年在全球名声大噪。</p>
+        <p id="p-136" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">他们当初的想法是：有竞争才能确保安全，如果有一天谷歌手下的人工智能对人类不友好了，OpenAI 就可以去和他们对抗、保护人类。当然你可能会怀疑：他们这么做真的是这么正义吗？难道不是因为看上了人工智能这个商业风口、又怕被谷歌垄断了所以才想去分一杯羹吗？但其实 OpenAI 的初衷确实不是为了纯商业利益，因为它刚成立的时候和现在不一样：实验室开发的所有软件都是开源的，任何人都可以免费使用，埃隆和彼得·蒂尔、里德·霍夫曼也都给实验室捐赠了大量的运营资金。而且埃隆和奥特曼还给 OpenAI 建立了一个基本原则，叫做“人工智能对齐”——这是著名科幻作家艾萨克·阿西莫夫提出的一个概念，就是要让人工智能和人类的目标、价值观保持一致。很多用过 ChatGPT 的朋友就会发现，它的价值观是和人类相似的：比如你问它“战争好吗”，它一定会说不好；你问“纳粹是对的吗”，它肯定会说不对。这其实就是埃隆当初定下的人工智能对齐原则在产品层面的体现。从这些细节可以看出，他去做 OpenAI 应该主要不是出于商业考量，可能真的认为这东西对人类有威胁。</p>
+        <p id="p-137" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">在 OpenAI 成立后，他还从谷歌挖了一位顶尖的工程师担任实验室的首席科学家。这件事可把佩奇彻底惹火了——毕竟我们普通人能理解，当初埃隆一穷二白没地儿住，是佩奇好心收留了他；可现在他不仅搞了个项目跟人家竞争，还直接去家门口挖墙脚，这不是恩将仇报吗？反正这件事后，两人再也没说过一句话。当然如果你去问埃隆“佩奇为什么和你绝交”，他肯定不知道，因为他没有共情能力，体会不到佩奇的愤怒和委屈。作者在给他分析这件事的时候，埃隆还觉得佩奇莫名其妙：“你不关心人工智能的安全，我就弄了个团队来解决安全问题，这事哪里做错了？”</p>
+        <p id="p-138" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">不过虽然经历了这些波折，但也算是打开了一个窗口，激发了埃隆对人工智能的兴趣。他后来创办 Neuralink，在人脑中植入微芯片，这就是媒体上常说的脑机接口；他还在特斯拉设立了 Optimus 部门，开发人形机器人。不过虽然这些探索看上去很黑科技、也容易有媒体噱头，可它们并没有真正触达人工智能的核心区。后来埃隆才理解了这里面的真谛，他意识到：一个人工智能系统能否突破，取决于它能不能从真实世界获得大量数据供机器学习。这么看来，他的特斯拉就是个金矿，每天都能把海量道路与驾驶数据上传到服务器；同时他还发现 Twitter 也是个宝藏，平均每天能发五亿条推文——当然这是后话了。</p>
+        <p id="p-139" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">当时的埃隆一心想着怎么把人工智能跟电动车结合起来实现自动驾驶，他觉得这才是 AI 最直接的应用场景。为了更快实现目标，2018 年埃隆强势要求奥特曼把 OpenAI 并入特斯拉发展，但对方拒绝了，两人就此决裂，OpenAI 从此也失去了埃隆的资金支持，从一个非盈利实验室变成了盈利机构，开始对外融资和商业合作。</p>
+        <p id="p-140" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">2022 年 6 月，OpenAI 团队带着 ChatGPT 找到了另一位世界首富比尔·盖茨谈融资。盖茨本来想打发他们走的，说：“除非这玩意儿能通过大学的生物学考试，否则我就不感兴趣。”他以为这个挑战够他们忙活的了，自己能清净个两三年；结果没想到三个月后，ChatGPT 就完成了学习，盖茨问了它一堆生物学知识，它都能对答如流！他非常震惊，立刻让微软给 OpenAI 投资了 130 亿美元。</p>
+        <p id="p-141" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 1. 与拉里·佩奇决裂、创办 OpenAI 与再建 xAI">埃隆知道后非常不爽，直接在 Twitter 上攻击奥特曼。他说：“我当初和你成立 OpenAI，说好了是做一个非盈利实验室，所有软件都要开源、免费给社会使用；可你现在不仅把代码封闭起来，还卖给了微软，这跟我们的初衷背道而驰。我可是为了实验室公益捐赠了 1 亿美元，你这么干绝对违法！”奥特曼则回复说：“这不违法，而且我也不是为了套现，从实验室转成公司后我也不是股东，你要是不愿意，我可以给你新公司的股份。”而埃隆的反应是：“谁稀罕你的股份！”要知道当时 OpenAI 的估值已经有 300 亿美元了，他放弃的可不是一笔小钱，是真的硬气。到了 2024 年，他更是对奥特曼和 OpenAI 团队提起了诉讼，然后埃隆转头就成立了一家叫 <strong>xAI</strong> 的公司，要做一个 ChatGPT 的竞品——又是 X 这个名字，他还真的是怨念重啊。</p>
+        <h3 id="sec-4-2" class="subsection-title" data-toc-id="sec-4-2" data-toc-title="2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底</h3>
+        <p id="p-142" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">那在连续失去了 DeepMind 和 OpenAI 两大团队的支持后，埃隆还能做好人工智能吗？当时他认为 AI 最直接的应用就是用到汽车上——我们在上面睡一觉就能自动开到目的地。所以 2016 年 10 月，埃隆就对着媒体宣布：一年后，他的特斯拉将可以从洛杉矶一路自动开到纽约，全程无需人工干预，只要打开导航就可以了。但是一年后这个目标并没有实现。2017 年 5 月，TED 演讲发起人 Chris Anderson 问老马：“我们什么时候才能买到你说的那种可以完全不用人管、睡一觉就能到达目的地的特斯拉呢？”埃隆说：“大概还需要两年。”但两年后，这个目标还是没有实现。2019 年 4 月，埃隆在特斯拉举办的自动驾驶日上再次宣布：我们可以造出完全自动驾驶的车辆，到时候我们会造出 100 万辆自动驾驶的出租车！然后这个目标依然没有实现，甚至到了 5 年后的今天，大街上也没有一辆完全自动驾驶的特斯拉出租车。反正几乎每一年，埃隆都会预测完全自动驾驶即将实现，但他的预测从来没有发生过。所以很多人批评说他每天胡言乱语、吹牛画大饼；而特斯拉内部的人知道他是故意这么说的，因为如果他松口承认自动驾驶还需要很长时间，那就不会有人充满紧迫感去推进这件事了。</p>
+        <p id="p-143" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">不过，特斯拉的完全自动驾驶进度不够快，跟它的技术路线有很大关系。最早的时候他是想和谷歌合作开发一个自动驾驶系统的——谷歌是研究自动驾驶最早的企业之一，在当时算是技术最领先的。但我们前面说过，埃隆和佩奇因为人工智能上的价值观分歧闹掰了，所以他决定自己干。但起步更晚的特斯拉要如何弯道超车呢？埃隆想到了<strong>纯视觉方案</strong>。</p>
+        <p id="p-144" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">到目前为止，主流车企做自动驾驶的方式都很依赖于硬件，比如激光雷达、超声波雷达等，然后再由算法计算出最优解决方案、再完成自动驾驶——当年谷歌走的也是这条技术路线。但埃隆却对此不屑一顾，他认为最完美的自动驾驶应该是扔掉那堆又丑又傻的雷达，只通过摄像头实现。他的依据还是第一性原理：人类可以只靠两只眼睛就能把车安全地开到目的地，那么理论上来说，机器也可以只靠摄像头采集的视觉图像完成自动驾驶。埃隆坚信大家现在用的只是个过渡方案，如果特斯拉可以一步到位、直接研究出可靠的视觉算法，那就不需要雷达了。这样的话特斯拉将会在商业上获得巨大的成功，因为雷达非常贵，纯视觉方案能省下巨大的硬件成本，竞争对手根本没办法和他卷，特斯拉只需要一波价格战就能把其他人通通送走。</p>
+        <p id="p-145" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">听起来好像纯视觉方案是挺美好的，但特斯拉的工程师们并不同意。他们觉得这个方案最大的问题就是安全性，当时的数据体量和算法水平还不足以支撑一个纯视觉方案的落地，很多现实中的复杂情况是解决不了的。举个例子：很多路上没有画车道线，或者视线模糊不清了，纯靠视觉车辆就没法在这样的路上找到车道，这会造成安全隐患。埃隆自己就遇到过这样的情况，而且差点出车祸，然后他就去大骂自动驾驶部门的同事、怪人家。没办法，同事们联系交通部门让他们把线画上了，这事才解决。但这毕竟治标不治本，因为总会有车道线不清楚的路段，光靠摄像头还是搞不定。</p>
+        <p id="p-146" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">所以在特斯拉内部，对于要不要使用纯视觉方案，工程师团队和埃隆一直存在分歧。从 2014 年开始，双方就为是否使用雷达拉锯了 10 年，工程师们试图让他明白这事难度极高、没那么快实现，必须得先用雷达过渡。当然，埃隆也有妥协的时候，比如他同意在量产的 Model S 上配备了 12 个超声波传感器和一颗在雨雾天探测路况的雷达。但他也有固执己见、把大伙气得七窍生烟的时候：比如他要求 Model 3 和 Model Y 的工程师做一个完全没有方向盘、油门刹车以及后视镜的版本，量产后投放到市场。他的意思我们都理解——埃隆就是想做一辆完全不用人管、真正意义上的自动驾驶汽车。但工程师们没人搭理他，更没人愿意去开发这个版本：一是现有技术做不到零接管，二是交通部门也不允许这样的车上路。</p>
+        <p id="p-147" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">不过，埃隆对自动驾驶的狂热差点就给特斯拉带来了灭顶之灾。他常年在各种场合鼓吹自动驾驶，特斯拉在营销宣传上也有意无意地强调他们的车有多智能，这就让很多人产生了误解。不少车主以为特斯拉自带的驾驶辅助功能就是自动驾驶，于是很多人在高速上打开驾驶辅助后就什么都不管了——玩手机、看电影、吃泡面，甚至还拍视频传到社交媒体上炫耀，这也太危险了！所以后来真的就发生了一些事故：2016 年，一位车主在打开驾驶辅助后自己在车上看电影，车主不幸遇难；巧的是这位车主还是埃隆的死忠粉，在 Twitter 上他俩还互关了。</p>
+        <p id="p-148" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">这件事发生后，媒体上铺天盖地都是批评的声音。埃隆删掉了和车主互动的推文，但他依然强硬地表示：“特斯拉的所有事故都不是车的问题，是人不当驾驶造成的。”这话虽然逻辑上没错——如果人在使用驾驶辅助时保持专注、随时准备接管车辆，确实可以避免大部分的事故；但问题是，为什么这么多人不拿自己的命当回事呢？因为他们误以为车子可以自动驾驶，而这种错误认知主要就是埃隆和特斯拉的夸大宣传造成的。面对舆论的质疑，以埃隆不服软的个性，他说：“全世界每年 130 多万人死于交通事故，这都是燃油车造成的，大家司空见惯了没人去关心它们；特斯拉才出了几起事故，你们就天天盯着，公平吗？我们的驾驶辅助系统明明就降低了事故率。”</p>
+        <p id="p-149" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">直到今天，特斯拉发生的交通事故还是会被大家放在显微镜下审视。不过我不觉得这是舆论在故意针对特斯拉，因为新事物都会遭受这样的待遇——在被大多数人接受之前，新事物身上的负面问题都会被放大很多倍去质疑。但这也没啥不公平的，因为作为一个新东西，它当初也占了很多舆论的便宜，比如特斯拉的一举一动都会上媒体头条，它 10 万销量的时候得到的关注远比 1000 万销量的丰田多得多。任何人和事物，只要受到与其体量不相称的关注，当然会遭遇与其体量不相称的质疑，这就是一体两面的事情。</p>
+        <p id="p-150" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">不过虽然不被舆论理解，埃隆追求完全自动驾驶的目标可一点没变，毕竟他没有我们普通人的喜怒哀乐，感受不到挫败感也不会内耗。在工程师团队的争取下，埃隆原本妥协了在特斯拉上安装雷达；但到了 2021 年，全球汽车芯片短缺，特斯拉拿不到足够的芯片，雷达无法使用。别人都在愁眉苦脸的时候，只有埃隆心里暗自高兴——终于找到一个取消雷达的正经理由了！于是他立刻召集大伙开会：“你们看，这不是我对雷达有偏见，现在是没有芯片咱们玩不转了，不如就趁现在把雷达丢了，直接用纯视觉算法，你们觉得如何呀？”</p>
+        <p id="p-151" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">特斯拉电动业务负责人 Jerome Guillen 立刻提出了反对意见，他还是认为去掉雷达太不安全，特斯拉的纯视觉算法远没达到能替代雷达的水平。埃隆听后让技术团队辩论了一下，大伙各抒己见；过了一会儿他就拍板道：“好，我决定了，去掉雷达。”大家面面相觑，感觉辩论了个寂寞，结果你是走了个过场。Jerome 继续表示反对，埃隆指着他说：“你少废话，干就干，不干就滚蛋！”于是这位特斯拉电动业务负责人就离开了公司——埃隆解雇人就是这么任性。</p>
+        <p id="p-152" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">但他去掉雷达的这个决定不出意外地再次引起了舆论震荡：《纽约时报》的两位资深调查记者暗访了特斯拉的技术团队，他们报道说特斯拉大多数工程师其实都很担心去掉雷达的安全性，人命关天的事儿埃隆决定太草率了；一位著名的软件安全专家也在媒体上发表了一篇文章，他说试用了一下特斯拉的自动驾驶系统，觉得这是有史以来最差劲的软件；更糟糕的是，美国国家运输安全委员会也开始调查特斯拉，官方机构都对特斯拉自动驾驶系统的安全性公开表示了质疑。</p>
+        <p id="p-153" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">那这种情况下，埃隆虽然固执，但他还不至于没脑子。看到取消雷达阻力那么大，他果断开始“曲线救国”，并提出了一个备选方案。原来在取消雷达之外，他又留了一手：特斯拉一直在自研雷达，他们自己做的雷达适配性更好，更贴合自家的软件，还不容易被供应商卡脖子。当时特斯拉团队已经把雷达做得差不多了，埃隆就对外宣布 Model S 和 Model Y 车型会使用这套自研雷达，终于化解了取消雷达引起的安全争议。</p>
+        <p id="p-154" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 2. 自动驾驶的“纯视觉”拉锯战与自研雷达兜底">这个局面是不是又似曾相识？他当初要创业的时候，先去学校办理延期入学，创业失败就回去读书；SpaceX 三次发射失败、弹尽粮绝的时候，他突然宣布还有第四枚火箭。埃隆表面上非常疯狂，喜欢赌不确定性、爱走极端，但如果你拨开他的内心就会发现，他其实没有看起来那么疯：对于那些成功概率不高的事儿，他会先计算收益，如果收益足够大他就敢去赌一把；同时他会做好风险对冲，不让任何人压垮他。这种模式，让他一次次把伟大的创意落地。</p>
+        <h3 id="sec-4-3" class="subsection-title" data-toc-id="sec-4-3" data-toc-title="3. 站队川普、与女儿断绝关系及星链的俄乌风波">3. 站队川普、与女儿断绝关系及星链的俄乌风波</h3>
+        <p id="p-155" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">不过这个处理方式也有不灵的时候，特别是在面对公众舆论面前。所以我们来聊聊马斯克的另一个身份：<strong>网红政治家</strong>。</p>
+        <p id="p-156" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">就像这次的美国大选，最引人注目的就是“马朗普 CP”了。埃隆支持川普，不只是在社交媒体上为他摇旗呐喊、在线下给他疯狂站台，更是发动自己的“钞能力”，明目张胆地帮他收买人心：比如在七个关键摇摆州，每拉到一个支持保守派立场的选民就会得到埃隆 47 美元的奖励，而且没有上限，拉的人头越多给的就越多。这还不过瘾呢，后来他干脆安排了抽奖，每天随机抽取一位懂王支持者奖励百万美元，截止到投票的前一天！这也让埃隆陷入了巨大的争议，因为通常商人们都是两党不得罪，不会这么激进地去干另一边，万一人家当选了呢？</p>
+        <p id="p-157" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">再加上他之前跟川普的关系并不算好：在以前，埃隆还在 Twitter 上说“川普同志，你年纪都那么大了，当个普通公司 CEO 都费劲，还当啥美国总统？”川普则反击说：“你还管得宽呢，你自己跟公司董事会的关系都一团糟。”所以说这次埃隆突然全身心拥护川普，让大伙都觉得太诡异，都怀疑背后是不是藏着什么不可告人的交易。</p>
+        <p id="p-158" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">其实如果你们去翻最近一年埃隆发的社交推文，就会对他支持川普这事不会感到奇怪了——他想到什么发什么，从来不藏着掖着，政治立场也都是公开的，只是最近几年埃隆经历了一次从左往右的转变，而且这种转变最早是因为他的家人。</p>
+        <p id="p-159" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">2021 年 1 月 7 号，特斯拉的股价冲到了每股 260 美元，这一天埃隆超越了杰夫·贝索斯，成为新的世界首富。但不管哪个国家的首富，当了就是个靶子，都会遭到舆论的重点关注和来自四面八方的攻击。但是埃隆最具争议的竟然是他和女儿 Vivian 的关系。确切地说，Vivian 一开始是埃隆的儿子，名叫哈维尔，但 18 岁之后他向法院申请改变了性别和名字，成为了一名女性。这种自由选择性别的行为在现在美国青少年人群里已经不是啥新鲜事了，它是被一个叫做“觉醒文化”的政治运动推广起来的。但由于在性别问题上埃隆极其保守，所以在自己孩子变性后他也深恶痛绝，他气愤地对作者说：这种政治氛围已经污染到了美国的校园教育，误导了很多孩子，自己就是一个受害者。而更糟糕的是，女儿 Vivian 不仅变性，还自称是一个社会主义者，激烈地反对一切资本家，所以在她爹成了世界首富后，Vivian 就宣布和埃隆断绝关系。这让老马就有点尴尬了。</p>
+        <p id="p-160" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">因为支持性少数群体的诉求，是左翼的民主党的基本政治立场。作者说，从那之后埃隆的政治主张就发生了变化：他以前本来是公开支持民主党的，甚至还在奥巴马竞选总统的时候捐过款；那时候埃隆确实不怎么欣赏得了川普，不过俩人也就是拌个嘴，没啥大矛盾。但女儿这事发生后，再加上工会的事情，他和民主党这边可就是方向性的分歧了。</p>
+        <p id="p-161" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">2021 年 8 月，拜登在白宫举行了一场表彰电动车行业的活动，邀请了通用、福特和克莱斯勒的负责人，就是没邀请埃隆。这次让他觉得又好气又好笑：让几家燃油车企来参加电动车行业的表彰，白宫你是在搞笑吗？当我们特斯拉是倒闭了吗？作者说，白宫的人可不蠢，他们不邀请特斯拉恰恰是一种有意为之的政治算计——这三大汽车厂解决了美国的大部分就业，而且背后都有强大的工会，拜登政府这么做实际上就是为了讨好他们背后的工会、巩固民主党的基本盘。而特斯拉在工会界的名声一直很不好，埃隆特别看不惯这种东西，甚至觉得它是让美国制造业落后的罪魁祸首。之前全美汽车工会曾试图跟特斯拉“联姻”，但被埃隆强硬拒绝了，也正是因为这事，他跟拜登政府狠狠结下了梁子。</p>
+        <p id="p-162" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">2021 年 11 月，拜登见通用 CEO 的时候，称赞他们在电动车领域处于世界领先地位，说是通用 CEO 领导了汽车行业的电气化转型。这下埃隆认为这都已经是在睁眼说瞎话了：拜登说这话的季度，通用总共在美国卖了 26 辆电动车，而特斯拉是 30 万辆！埃隆在推特上讽刺道：“拜登就是个傻乎乎的人形玩偶”，意思就是说他是资本的傀儡。</p>
+        <p id="p-163" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">不过，你要说埃隆那时候完全倒向了共和党，那也不是，他在很多问题上立场会忽左忽右：比如 2022 年拜登政府发布了《通胀削减法案》，里面包含补贴电动车产业的条款，埃隆就特别开心——因为传统的右派立场是反对政府补贴的、主张让市场自由竞争。而他这种忽左忽右的政治态度，在俄乌战争期间达到了高潮。</p>
+        <p id="p-164" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">2022 年 2 月 24 日，俄罗斯对乌克兰发动特别军事行动前的一个小时，乌克兰遭到网络攻击，全国的通信网络都断了。乌克兰副总理在推特上求助埃隆，希望 SpaceX 能给他们提供星链服务。那出于人道主义，埃隆就同意了。三天后，2500 个星链终端就在美军的帮助下运了过去；四个月内，乌克兰境内共运行了 15000 个星链终端，其中至少有 3600 个是老马免费送的，再加上免掉了一些服务费，相当于捐给了乌克兰 8000 万美元。作者说，在这种极端情况下老马给自己狠狠打了一波广告，乌克兰军官对媒体说：“如果没有星链的话，我们早就输掉这场战争了。”作者说当时埃隆在西方舆论里简直就是拯救世界的英雄，因为当时在欧美都是一边倒地支持乌克兰的。</p>
+        <p id="p-165" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">不过，这个场面很快就出现了戏剧性的变化。2022 年 9 月，乌军派遣 6 艘小型无人潜艇，准备偷袭驻扎在克里米亚的俄罗斯海军舰队。几周前，俄罗斯大使警告说乌军要是敢动克里米亚，俄军可能会对乌克兰进行核报复。埃隆告诉作者，他之前仔细研究过国际法，乌军如果攻击克里米亚，俄军进行核报复在法理上是站得住脚的，这样的话人类就真的有可能卷入核战争；但乌克兰用的是他的星链做导航，那就意味着埃隆也成帮凶了，他也要对核战争负责任，这是他绝对不能接受的。想到这儿，埃隆立刻下令切断了无人潜艇的星链服务，没了信号的潜艇沉入大海里，这次的攻击也就被化解了。</p>
+        <p id="p-166" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">但他这个做法引起了乌克兰的极度不满。乌军要求重新打开星链，但被埃隆无情拒绝，他认为他们在战争的路上走得太远了。之后，美国国家安全事务助理杰克·沙利文和参谋长联席会议主席马克·米利询问了此事，埃隆对他们说：“我不希望星链被用于攻击性的军事目的，我只支持乌克兰防御国土。”之后，他还打电话给俄罗斯的驻美大使，向他保证星链只会被用于防御，乌克兰反攻的时候星链不会给他们提供服务。甚至，他还给双方提出了一个和平计划：埃隆建议顿巴斯等俄罗斯控制的地区举行新的全民公投，同时建议乌克兰接受克里米亚是俄罗斯的一部分，并且保证乌克兰是一个中立的国家。作者说，埃隆是真心以为自己站在一个中立的立场，但他明显低估了国际政治和外交的复杂性。这个方案一出，乌克兰驻德国大使直接在推特上给他回了句“滚！”，乌克兰总统泽连斯基也在推特上发起了一个投票：“你更喜欢哪个埃隆？支持乌克兰的还是俄罗斯的？”</p>
+        <p id="p-167" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">作者说，当时大部分人都认为埃隆的言行就是在帮助俄罗斯，但他内心觉得特委屈。埃隆在推特上辩解说：“我只是担心俄罗斯为了守住克里米亚有引起核战争的风险，这对乌克兰和整个地球来说都是承担不起的后果。”作者说像这种理性主义的解释在情绪主导的网络世界是毫无用处的，所以埃隆被网友骂了个狗血淋头。他特别困惑：自己从没想过让星链服务军事，为什么全世界都为难他、要让他去用星链打仗？那既然良苦用心得不到认可，他索性心一横：“赚点钱算了！”决定不再提供任何免费的星链服务。所以后来 SpaceX 推出了一项叫<strong>星盾</strong>（Starshield）的服务，专门用作军事用途，他们向美国军方出售这个服务，由军方来决定怎么用、用在哪。可能埃隆觉得这样就可以把星链和军事剥离开了，但其实在全世界看来，这意味着 SpaceX 光明正大地参与了战争。</p>
+        <p id="p-168" data-section-title="四、AI 暗战、自动驾驶执念与政治转向 · 3. 站队川普、与女儿断绝关系及星链的俄乌风波">反正埃隆就是这么诡异：在改变世界的大事上他无比坚强，谁的声音都没办法阻止他实现目标；但面对政治和公众舆论的时候，又非常容易被外界干扰、尺度拿捏不好，可能这也是因为他没有什么情商吧。所以埃隆累了，决定还是把精力放回自己更擅长的商业上吧。</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link prev" href="#ch-3"><span class="pager-dir">← 上一章</span><span class="pager-name">三、2008 绝境翻盘与“太空首富”争霸战</span></a><a class="pager-link next" href="#ch-5"><span class="pager-dir">下一章 →</span><span class="pager-name">五、440 亿收购推特、婚恋家族纠葛与结语</span></a></nav>
+      </section>
+
+      <section class="chapter-section chapter-deferred" aria-labelledby="ch-5">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 05</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">推特百亿收购风波与复杂的人际家族纠葛 · 约 8,880 字（17 分钟）</span>
+          </div>
+          <h2 id="ch-5" class="chapter-title" data-toc-id="ch-5" data-toc-title="五、440 亿收购推特、婚恋家族纠葛与结语">五、440 亿收购推特、婚恋家族纠葛与结语</h2>
+        </header>
+                <h3 id="sec-5-1" class="subsection-title" data-toc-id="sec-5-1" data-toc-title="1. 从 14.9% 股份到 440 亿全资收购推特">1. 从 14.9% 股份到 440 亿全资收购推特</h3>
+        <p id="p-169" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">2022 年，埃隆迎来了他商业上的巅峰之年：特斯拉在 12 个月内没有投一分钱广告，销量却增长了 71%，市值突破 1 万亿美元，超过第 2 到第 10 名上市车企的市值总和；SpaceX 在一季度发射进入预定轨道的有效载荷是其他所有国家加起来总和的两倍，星链服务的用户也突破了 50 万，SpaceX 的估值到了 1000 亿美元。一切迹象表明，只要他不乱搞，一切都会继续向好。但这可是埃隆·马斯克，怎么可能不折腾？</p>
+        <p id="p-170" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">这一年年初，埃隆高位套现了 100 多亿美元的特斯拉股票。突然手握这么多现金，他思考着该干什么？想了很久，他决定要任性一把——把自己喜欢的 Twitter 买下来。简直是个存不下钱的哥们！</p>
+        <p id="p-171" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">我们都知道，他冲浪的热情绝不亚于川普：过去 10 年发了近 2 万条推文，平均每天发 5 条半。这种热情也好理解，毕竟他追求沟通效率，发一条推全世界都看得到，而且自己成了网红就可以无限节约广告费。当然了，埃隆做这件事也是出于政治立场的考量，想要掌握一定的舆论话语权。我们之前说了，埃隆不喜欢美国左派搞的觉醒运动，他认为这种环境已经把美国的言论氛围弄得很怪，Twitter 应该是一个自由表达的地方，不应该被政治裹挟。一个很典型的例子就是川普被官方封号了，虽然埃隆那会儿也不喜欢川总很多发言，但他认为那也不至于不让人家说话了呀，这是侵犯人权。</p>
+        <p id="p-172" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">埃隆有一天发起了一个投票，问大家觉得 Twitter 做到言论自由了吗？结果 70% 的用户回答都是没做到。很多人也说 Twitter 上右翼的内容受到的审查更多，左翼内容则畅通无阻——这事儿虽然真假难辨，但埃隆认定它就是真的。他说：“我不想看到自己喜欢的 Twitter 成为意识形态工具，我有责任去改变这样的现状。”于是埃隆就开始悄悄买入 Twitter 的股票了。</p>
+        <p id="p-173" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">但过了一阵，他的想法又变了。他发了个推文问大家：“你觉得我们需要一个言论自由的新平台吗？”很多网友都说需要。于是埃隆开始考虑，要不要办一个新平台搞死 Twitter？这让 Twitter 董事会看到后紧张得要命，于是他们主动跟老马示好，并且邀请他进入董事会——意思就是“你加入我们，以后咱就是一家人了，有什么想法可以提，千万不要搞我们啊”。埃隆对他们这个态度很是满意，于是就放弃了弄新平台的想法。</p>
+        <p id="p-174" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">之后，Twitter 董事会主席和 CEO 请老马吃了个饭，双方谈了他进入董事会的细节。埃隆对这位 CEO 的第一印象就是：人很好，待人舒服。在我们常人看来这绝对是好评价，对吧？但在埃隆眼里这可是个大大的扣分项，因为他一贯的管理逻辑是：CEO 不是用来让别人喜欢的，你要强硬，人特别好的大都当不好 CEO。所以当时埃隆就想着把他换掉了。这可怜的 CEO 也是倒霉，第一次见面热情招待，结果被人“背刺”。</p>
+        <p id="p-175" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">两天后，Twitter 就发来了书面协议，正式邀请埃隆加入董事会。但协议里有个在 Twitter 发言的限制条款，比如要求他不能像以前那样公开批评 Twitter——这又踩到他的雷区了。埃隆觉得非常滑稽：一家号称保障言论自由的公司，现在居然用合同限制他的自由发言！他强硬地回复：“让我签这玩意儿，门儿都没有。”Twitter 也是没办法，只好修改了协议、放弃了限制发言条款，唯一剩下的限制是埃隆持有的 Twitter 股份不能超过 14.9%。这下他觉得没有问题，就把合同签了，Twitter 也对外公布了这个信息。</p>
+        <p id="p-176" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">他以前在 PayPal 的老朋友 Kam 看到消息后就问他：“你为什么要入股 Twitter？这玩意儿是媒体，跟科技行业都不沾边，你玩不转的，别给自己惹一身骚。”埃隆说：“Twitter 压制言论自由，我想办一个真正畅所欲言的平台，这对民主社会很重要。”Kam 说：“言论自由没你想的那么简单，不是用户想说什么就说什么的。平台需要保持日活，就得把用户感兴趣的内容推送给他们，那在这个算法里其实就包含了价值取舍——你推什么、不推什么得有个评判标准，但这就是个费力不讨好的活儿了：不管你的标准多客观，反对的人都会说你压制言论自由。”从结果来看，Kam 可真是个预言家。</p>
+        <p id="p-177" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">但当时的埃隆对这些体会还不深，他自以为有一个很完美的解决方案。他说：“我们可以把推送规则的代码开源，谁都可以看到我们的推送逻辑，什么内容被推荐、什么不被推荐都有公开透明的标准，没有暗箱操作。”他相信这么做可以增加 Twitter 对保守派用户的吸引力，而且也更容易进行商业变现：按他的设想，Twitter 未来可以开设付费会员，给他们提供差异化的推送，还可以做一些付费内容让用户购买；形成小额付费习惯后，Twitter 就可以既是一个社交媒体，又是一个金融工具了。让社交软件具备金融功能一直是埃隆的梦想——他以前做 X.com 就是想实现这个目标，结果自己被踢出了公司，梦碎了一地；24 年后，他终于有机会实现了，光想想就很激动。</p>
+        <p id="p-178" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">不过，当时的埃隆还没有完全买下它的想法，他想的还是作为一个投资者在 Twitter 做一些改变。但是接下来发生的两件事情彻底改变了这一切：</p>
+        <p id="p-179" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">- <strong>第一件事</strong>，是弟弟金伯尔提了个建议，他说：“你可以基于区块链技术打造一个社交媒体，没有中央服务器，这样就保证了所有人能畅所欲言；要是再把虚拟货币引进来，既能社交又能安全交易，就更完美了。”埃隆听完觉得非常有道理，但仔细一想，要做这么大动作，自己光投点钱当个股东肯定是不可能的。</p>
+        <p id="p-180" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">- <strong>第二个导火索</strong>，就是一条推文引发的“惨案”。2022 年 4 月 9 日是按照协议埃隆正式成为董事会成员的日子。他当时人在夏威夷休假，凌晨 3 点多了还睡不着，就随手翻了翻 Twitter 上的那些大 V，发现很多头部账号都不怎么活跃了，于是就发了条动态说：“大部分顶流都不怎么发东西了，Twitter 是要死了吗？”过了一个半小时，Twitter CEO 给老马发了一条私信：“您今天正式成为董事了，公开吐槽好像对我们改善处境没有什么帮助。”看得出来对方已经很不爽了，但是措辞还是很克制的，生怕得罪了老马同志。但他还是失算了，即便这种客气的质疑，埃隆也是不能接受的。一分钟后，他愤怒地回了句：“我不加入你们董事会了，纯属浪费时间，我要收购你们！”</p>
+        <p id="p-181" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">Twitter 董事们当晚就全部起床疯掉了，大家通过各种渠道哀求他：“大哥，咱还能谈谈吗？”但埃隆根本不理他们，直接联系投行定了交易，决定了一个收购价：每股 54.2 美元。按照这个价格计算，当时 Twitter 全部股权价值 <strong>440 亿美元</strong>。理论上他只要买下 51% 的股份成为绝对大股东就可以为所欲为了，但埃隆不是这种风格，他不想跟那帮“废柴”合伙影响心情，他要把过去 Twitter 的痕迹全部清洗干净，于是决定要 100% 收购。敲定计划后，埃隆就给 Twitter 发了一个收购邀约，完全不征求人家意见，也不在乎对方有多么绝望。很快，董事会也放弃挣扎了，接受了收购计划。然后埃隆就开开心心地筹钱去了：他拉来了几个哥们入伙，比如甲骨文老板拉里·埃里森、红杉资本的合伙人迈克尔·莫里茨等等，自己手里头还有 100 多亿美元现金，然后又去找银行借了一部分。总之没多久，440 亿美元就凑齐了。埃隆本来还问过弟弟金伯尔要不要投，结果被老弟无情拒绝，因为他身边大部分人都觉得推特是个吃力不讨好的烂生意。</p>
+        <p id="p-182" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">而且他们这个担心很快就应验了。在收购尽调的讨论中，当埃隆质问假账号数据等核心情况时，在座的高管一个都答不上来，埃隆彻底火了！这事让他开始怀疑自己给的报价是不是太高了——Twitter 的真实情况应该非常糟糕才对。作者说，因为当时的市场受到新冠疫情的影响，大部分企业经营困难都调低了广告预算，所以主流社交软件广告收入大幅下滑、股价也跟着跳水，而埃隆给的报价非常慷慨，是按 Twitter 股价溢价 30% 报的。</p>
+        <p id="p-183" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">回去后，埃隆就发了条推文说：“我要暂停收购，我必须核实一下假账户的比例到底是不是 5%。”这下又轮到他的律师们疯了，一个个打电话劝埃隆赶紧删掉——因为美国证监局对这种信息披露非常严格，在交易完成之前都不可以公开谈论，否则就有操纵股价的嫌疑；而且人家是上市公司，暂停收购这种消息传出去，股价是要崩的！果不其然，第二天开盘前 Twitter 股价就暴跌了 20%。埃隆见状又发了条推文：“我正在努力完成这笔交易！”假装路过、啥也没有发生，真拿全世界当傻子。</p>
+        <p id="p-184" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">之后几个月，埃隆和 Twitter 开始了漫长的谈判，他要求对方拿出原始数据，否则就要退出收购。结果对方居然去法院起诉他，要求按原价收购。听到这里你是不是也觉得很奇怪：明明一开始还不情愿的，咋现在又希望埃隆买了呢？其实是因为当时 Twitter 也严重受到了市场环境的影响，从股价到营收都在持续走低，越来越多老股东希望解套离场，所以埃隆按原定价收购成了一个非常有吸引力的选择。Twitter 起诉后，双方在诉前做了最后的和解尝试：埃隆提出“鉴于你们的不真诚，收购价格要打对折”；Twitter 团队说“没可能，那就走诉讼吧”；眼看虚张声势没用，埃隆说“那至少降 10%”；Twitter 团队说“最多降 4%”。双方纠缠了几个月，在开庭前的最后一刻终于达成协议完成了交易——而最终的成交价居然还是按照原来 440 亿美元买的，一分没少！</p>
+        <p id="p-185" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">为什么会这样呢？其实埃隆也很无奈。我们前面说了，他做收购方案的时候拉上了银行，如果价格变了，当初的借款合同就得重新签；而当埃隆整了那么大一出闹剧后，银行肯定觉得风险比之前大了，即便还愿意借钱给他，也必然会调高利率。这就意味着磨半天磨下来那点价格，最后还是会被银行吃掉。埃隆一想就算了、不折腾了，就按原价买了，郁闷地把这个哑巴亏给吞了下去。</p>
+        <p id="p-186" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 1. 从 14.9% 股份到 440 亿全资收购推特">不过在 10 月份交易敲定的那一刻，埃隆又恢复了往日的自信——毕竟他心里装了 20 年的社交金融梦终于有机会可以实现了。但在实现伟大梦想之前，他还有一场仗要打。当时 Twitter 交易是在 2022 年 10 月 28 号正式完成的，管理层们都认为马上就能愉快地跟埃隆交接、帮助 Twitter 进入马斯克时代，然后自己能拿到一笔遣散费和一些股票期权，就可以体面地退出了。不仅他们这么想，连华尔街和大众媒体也这么想，因为这是公司私有化退市的常规操作。可是所有人都忘了埃隆是多么的睚眦必报，他怎么能把吃的哑巴亏咽下去呢？正式完成的那天是周五，在前一天下午埃隆就催着 Twitter 团队完成了各种权限和账户转移；转移完之后几乎一秒都没有耽误，他的律师团队就给高管们发了封邮件说“你们被辞退了”，然后埃隆通知保安立刻对 Twitter 办公大楼进行清场，把所有人都赶了出去。这帮高学历的知识精英哪里见过这种市井江湖手段，集体傻眼。当然埃隆耍横也是有他的小心机：因为只要卡在交易完成之前辞退这帮高管，自己就不用支付遣散费和股票期权了，这大概会给他节省 2 亿美元！很多人都批评他这么干不地道，但埃隆·马斯克怎么会在乎呢？</p>
+        <h3 id="sec-5-2" class="subsection-title" data-toc-id="sec-5-2" data-toc-title="2. 铁血裁员、“推特文件”反噬与董事会警告">2. 铁血裁员、“推特文件”反噬与董事会警告</h3>
+        <p id="p-187" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">在收购完成后的第一天凌晨三点，他给作者发了条信息说：“我特别兴奋，24 年了，我对 X.com 的规划终于要落地了，好激动睡不着。”几天后，他又发来一条信息：“我现在很无奈，这里的情况太棘手了，今晚得睡办公室，我好烦睡不着。”到底发生了什么，让埃隆这么木讷的人都能情绪两极反转？</p>
+        <p id="p-188" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">因为第一天上班他就发现，Twitter 的企业文化他很不欣赏。作者形容，当时埃隆就像一个西部牛仔骑着马狂奔进了星巴克：Twitter 是非常典型的硅谷互联网企业文化，氛围极其宽松，员工有着很大的自由度、可以不坐班，福利也超好，有咖啡、瑜伽馆、健身房甚至还有游戏厅；但埃隆的公司却是完全相反的，他带出来的团队无敌硬核、承压巨大、节奏也超快、管理上不拘小节。他经常说：“团队是用来战斗的，不是来度假的。客客气气、人性化的管理，只会让人待在舒适区里干不成大事。”</p>
+        <p id="p-189" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">所以，埃隆要怎么改变 Twitter 的文化呢？两个字：<strong>裁员</strong>。他调来了三名心腹工程师，让他们带着一个小团队专门审查这些人的工作能力。他说：“Twitter 现在有 2500 名软件工程师，如果每人每天只写三行代码，一年能写接近 300 万行代码，可这帮人竟然连这个工作量都没有达到。特斯拉的自动驾驶团队只有 150 名工程师，我不觉得 Twitter 比自动驾驶更复杂，所以给我把人数压缩到这个水平！”这就意味着有 90% 多的工程师都要被裁掉。人力资源部抗议说这可能会让 Twitter 运作瘫痪的、太冒险了；埃隆很不高兴，让他们必须照做，然后就把人力资源部的人也裁了一大半。后来的结局就是，Twitter 的员工数从 8000 人一下子变到了 3600 人。</p>
+        <p id="p-190" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">但这还只是第一轮。埃隆紧接着要求马上开始第二轮裁员。这一次，埃隆决定要选出那些真正有工作自驱力的人，但这个东西太虚很难量化，所以他就让剩下的员工自己选：“我就是要折磨你们，你们是拿三个月工资补偿离开，还是选择留下？”埃隆预测这 3600 人里可能只有一半会留下来，但最终的结果却出乎他的意料，竟然有 2492 人愿意跟着他干。所以第二轮裁员后，埃隆召开了全员大会安抚人心，宣布“不会再有裁员了”。与此同时，他却让刚才那三个心腹暗中继续评估现有员工的能力。作者问他：“你都宣布不裁员了，还评估个啥呢？”埃隆解释说：“我是评估他们胜不胜任工作，不胜任就遣散，这不叫裁员。”于是在第三轮裁员后，推特就只剩下可怜的 2000 人了。</p>
+        <p id="p-191" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">接下来，埃隆准备改改内容推送算法。他向来提倡言论自由，希望把内容审查放宽一些。以前在推特上对 LGBT 人群故意用错人称代词都可能被禁言，埃隆觉得这种发言又没伤害到别人，何必罚那么重呢？负责内容审查的是一个叫约尔·罗斯的员工，他提议可以给一些争议言论限流或者内容仅自己可见，埃隆很赞成。结果没想到放宽了标准后，几天内推特上类似种族歧视的词就多了 5 倍，各种宣扬极端言论的机构开始试探在推特的发言边界。这让广告商立马不乐意了：上面充满了仇恨极端言论，谁还敢投广告呢，消费者会误会我们的立场啊！这可要了推特的命，毕竟它 90% 的收入都是靠广告。疫情以来这块业务本来就下滑严重，埃隆这么一折腾又下降了 50%。为了渡过难关，埃隆只好又卖掉了 40 亿的特斯拉股票补贴给推特用。</p>
+        <p id="p-192" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">而火上浇油的是，用户这边也开始抵制推特了，原因是埃隆推出了付费会员、还给他们打上了一个蓝色的认证标签，这种区别对待让免费用户很不爽，他们呼吁各大品牌不要在推特上打广告，否则就不买他们的产品了。埃隆愤怒地跟负责内容审核的约尔说：“把这些抵制我们的用户通通禁言！”约尔说：“我们的官方规则里也没有说用户不能抵制我们，凭啥禁人家呢？”“艾霸总”又上身了，他说：“你听好了，我让你去禁言你就去做，我没有问你的意见。”反正这件事情之后约尔也很快离职了，他觉得埃隆说一套做一套，根本不提倡言论自由。</p>
+        <p id="p-193" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">不过真正让埃隆在言论问题上声名狼藉的，是著名的<strong>“推特文件事件”</strong>。当时他找了两位独立记者，给他们访问推特所有后台数据、往来邮件的权限，让他们去查过去那些年政府人员干涉推特内容审核的痕迹。他这么干是因为一直有阴谋论的声音怀疑推特的言论被美国政府控制，埃隆想向世界证明：虽然他是推特老板，但不护短，为了公众利益他可以把见不得光的东西暴露在阳光之下。结果还真的被记者找到了之前推特审核部门和政府的沟通记录——像 CIA、FBI 这些政府机构常年都跟推特有合作，只要他们要求、推特就会删帖，这可是个惊天大瓜，老美这边的舆论场一下子就炸锅了。埃隆对此非常满意，他觉得这可以提高人们对新推特的期待、扭转当前的困局。结果没想到乐极生悲：那两名记者在调查过程中还发现，在埃隆接手后也经常指挥审核部门对一些他不同意的言论进行限流，还封了很多人的账号。他们专门写了一篇报道批评埃隆。这让埃隆恼羞成怒，直接封了他们的账号，还限制用户在推特上讨论此事。但是这个处理也就等于坐实了记者说的——他并不真正推崇言论自由，只是事不关己的时候表现出很自由的高姿态，当别人攻击到他的软肋时，他内心真正的想法是“你给我闭嘴”。</p>
+        <p id="p-194" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 2. 铁血裁员、“推特文件”反噬与董事会警告">这波操作也真的是搬起石头砸自己脚了。推特广告主离开得更多了，更惨的是影响还波及到了特斯拉：在埃隆宣布收购推特的时候，特斯拉的股票是 340 美元，而这时已经跌到了 156 美元。特斯拉的董事会成员平时对埃隆俯首帖耳，这次他们终于忍不住了，纷纷警告埃隆“推特的争议正在损伤特斯拉的品牌”，包括弟弟金伯尔也认为他该对特斯拉股价下跌负责。可以说收购推特让埃隆的事业巅峰期变成了一地鸡毛。不过现在这事还在进行中，未来怎么样我们也无法预测。</p>
+        <h3 id="sec-5-3" class="subsection-title" data-toc-id="sec-5-3" data-toc-title="3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”</h3>
+        <p id="p-195" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">但可以肯定的是，比推特更让马斯克感到难受和难搞的，还得数他的家庭和婚姻了。</p>
+        <p id="p-196" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">之前我们说过，埃隆成年后跟父亲埃罗尔·马斯克关系一直很紧张。实际上，2016 年前他很久都没有见过父亲，因为他觉得父亲丢了他们家族的脸。当初跟母亲梅耶离婚后，埃罗尔又娶了一位比自己小 19 岁的妻子，妻子还带着一个 4 岁的小女儿 Jana。2002 年，父亲带着一家老小来美国看埃隆，埃隆当时已经很有钱了，他本来准备给父亲买栋房子、让他们一家人也搬过来住；结果埃隆和金伯尔敏锐地发现父亲跟 15 岁的继女 Jana 有过分亲密的行为，这让哥俩无法相处，觉得简直就是奇耻大辱，然后就把父亲赶回了南非。后来埃罗尔跟第二任妻子离婚，正大光明地和小自己 41 岁的继女在一起了！所以兄弟俩直接断了联系，更不想理他了。一直到 2016 年，埃隆和金伯尔带着各自的孩子们去南非旅行，听说父亲身体出了问题就约他出来吃了顿饭，双方关系终于有了和解的迹象。但没过多久 Jana 怀孕了！这事又惹怒了他们，金伯尔跟作者说“这还和解什么，拉倒吧”，从此就再也没有跟父亲说过话。而每当媒体问到埃隆这事的时候，他都会情绪失控，眼睛里包着泪水。本来之前埃隆每个月还会给父亲打 2000 美元的生活费，后来他也把生活费停了。2022 年 3 月，父亲发了封邮件威胁埃隆，说：“我都 76 岁了，你再不给我钱我就只能自杀，让世界首富虐待父亲的事人尽皆知，你这辈子就毁了，你自己看着办吧！”结果那一年的父亲节后，埃隆又重新开始每个月打钱了——然后父亲就反手送了他一份“心灵暴击”：Jana 再次怀孕了。也不知道这个父亲是怎么当的，所以这也是埃隆内心的伤口，不能随便提的那种。当然我们也说了，他恰恰是最像埃罗尔的一个孩子，埃隆自己的婚恋生活其实也没有处理得多好。</p>
+        <p id="p-197" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">2010 年，他和英国女演员 Talulah 闪婚，但很快就遇到了和第一段婚姻一样的问题——他把所有精力都给了工作，根本没时间关心家庭。所以 Talulah 在 2012 年提出离婚。俩人分居了四个月后去法庭走流程，在法庭上埃隆突然问她：“我们这是在干什么？”然后他们俩竟然当着法官的面开始接吻！Talulah 说，估计这位法官也很少见到这么戏剧的场景。不过他俩还是把离婚手续办完了，但 Talulah 又搬回去跟埃隆一起住，等于走了个过场；所以一年后，他们又在法庭上复婚了。但毕竟根本问题没有解决，埃隆还是不能给她足够的陪伴，所以几番拉锯之后，2015 年他们再次和平离婚。</p>
+        <p id="p-198" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">之后他和另一位好莱坞女明星 Amber（也就是德普前妻）有过一段短暂的恋情。当时 Amber 正在和德普打离婚官司，这事也是人尽皆知、非常难堪，本来烦到不行，埃隆的出现就像一股清流，俩人不顾别人的眼光立马热恋了。但八卦过德普离婚案的朋友都知道 Amber 也不是省油的灯，她跟埃隆个性很像，都很强势刻薄、想控制住对方，所以不到一年就分手了。</p>
+        <p id="p-199" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">2018 年，埃隆又和电音歌手 Grimes 开始了下一段恋情。他俩是 Twitter 上认识的，因为都很关心人工智能失控的问题，越聊越投缘就在一起了。他们通过人工辅助生殖的方式生下了大儿子 X——就是埃隆现在每天带在身边的那个，是他最喜欢的仔。不过在 X 出生之后，Grimes 和埃隆的关系就陷入了困局，俩人决定分手、一起抚养孩子。之后他们的关系变得很飘忽，有时候住在一起，有时候又会分开，忽冷忽热——但不影响他们又人工辅助生了第二个孩子 Y。再加上第一任妻子 Justine 生的五个，埃隆目前已经有了七个小孩。</p>
+        <p id="p-200" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">但这还没完，因为他跟普通人的脑回路不一样，他觉得我们人类有义务繁衍后代、把文明延续下去，特别是那些聪明的基因更要多多繁衍！所以 2021 年底，埃隆又有了一对龙凤胎。不过母亲不是他的妻子或者女友，而是他脑机接口公司 Neuralink 的女高管，叫西冯·齐里斯（Shivon Zilis）。她也是非常聪明，跟埃隆在精神世界有很多共鸣，俩人罕见地从不吵架；但西冯是个不婚主义者，所以埃隆没事就在旁边劝她一定要生孩子，自己可以捐精子给她，让基因强强结合。那既然从不吵架，说明俩人脑回路还挺接近的，同时西冯也很崇拜埃隆，觉得让偶像当孩子父亲也是个不错的 idea，所以俩人就秘密去做了试管婴儿，是一对龙凤胎，姓也是随妈妈的。</p>
+        <p id="p-201" data-section-title="五、440 亿收购推特、婚恋家族纠葛与结语 · 3. 父亲的家庭丑闻、多段婚姻与“繁衍聪明基因”">巧的是西冯刚生完孩子，Grimes 的第二个孩子也出生了，甚至他们还在同一家医院！本来 Grimes 和西冯平时就是好朋友，但孩子的父亲是谁，西冯守口如瓶。结果人算不如天算：埃隆大儿子变性后——也就是现在的大女儿 Vivian——决定要把“马斯克”这个她恨透了的姓氏从自己名字里删掉，这让埃隆超级伤心。于是他就跑去问西冯可不可以让龙凤胎随他姓，西冯同意了；但他们提交的法庭文件很快就被泄露了出去，毕竟是个超级大新闻！Grimes 知道后跑去质问埃隆，结果他却说：“西冯有权做她想做的事情。”这下可把 Grimes 给彻底惹怒了，俩人关系更疏远了——但依然不影响他们后来又人工辅助生下了第三个孩子。看得出来真的是灵魂契合的那种。</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link prev" href="#ch-4"><span class="pager-dir">← 上一章</span><span class="pager-name">四、AI 暗战、自动驾驶执念与政治转向</span></a><a class="pager-link next" href="#ch-6"><span class="pager-dir">下一章 →</span><span class="pager-name">六、结语</span></a></nav>
+      </section>
+
+      <section class="chapter-section chapter-deferred" aria-labelledby="ch-6">
+        <header class="chapter-header">
+          <div class="chapter-kicker">
+            <span>CHAPTER 06</span>
+            <span aria-hidden="true">·</span>
+            <span class="chapter-readtime">回望五十余载人生的信念与人性 · 约 158 字（1 分钟）</span>
+          </div>
+          <h2 id="ch-6" class="chapter-title" data-toc-id="ch-6" data-toc-title="六、结语">六、结语</h2>
+        </header>
+                <p id="p-202" data-section-title="六、结语">好了，到这里，《埃隆·马斯克传》我们就讲完了。这本书是 2023 年出版的，内容也是截止到 2023 年 4 月。虽然埃隆还在继续创造他的人生，但截止目前，我们已经可以感受到他是一个足够聪明、具有争议、也足够让人好奇的人。希望你能从他 50 多岁的人生里，获得一些关于信念、冒险以及人性不一样的思考。我们下本书再见！</p>
+        <nav class="chapter-pager" aria-label="章节翻页"><a class="pager-link prev" href="#ch-5"><span class="pager-dir">← 上一章</span><span class="pager-name">五、440 亿收购推特、婚恋家族纠葛与结语</span></a></nav>
+      </section>
+      </article>
+
+      <footer class="page-footer">
+        <span>《埃隆·马斯克传》深度书籍导读 · 原著：Walter Isaacson（2023）</span>
+        <span>全文共 53,387 字 · 支持键盘 <kbd>/</kbd> 检索与明暗阅读模式</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Floating Scroll-Position-Aware Back-to-Top Button -->
+  <a id="back-to-top" class="back-to-top" href="#top" aria-label="返回页面顶部">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+    <span>回到顶部</span>
+  </a>
+
+  <script defer src="app.js"></script>
+</body>
+</html>
